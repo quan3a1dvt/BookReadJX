@@ -75,7 +75,6 @@ public class eBookController implements Initializable {
         for(File file : filesList) {
             String fileName = file.toString();
             if (fileName.endsWith("epub")){
-
                 eBook book = new eBook(file.getPath());
                 eBookObservableList.add(book);
                 book_table.setItems(eBookObservableList);
