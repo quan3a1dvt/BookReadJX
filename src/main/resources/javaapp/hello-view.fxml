@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.eBookController">
+   <top>
+      <Pane prefHeight="86.0" prefWidth="900.0" BorderPane.alignment="CENTER">
+         <children>
+            <SplitMenuButton mnemonicParsing="false" onMouseClicked="#addBookClick" prefHeight="78.0" prefWidth="53.0">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+              </items>
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+               <graphic>
+                  <ImageView fx:id="add_book" fitHeight="82.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/add_book.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </SplitMenuButton>
+         </children>
+      </Pane>
+   </top>
+   <center>
+      <TableView fx:id="book_table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="title" prefWidth="510.0" text="Title" />
+          <TableColumn fx:id="author" prefWidth="193.0" text="Author" />
+            <TableColumn prefWidth="117.0" text="Size" />
+        </columns>
+      </TableView>
+   </center>
+</BorderPane>
