@@ -6,9 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +19,8 @@ import java.util.ResourceBundle;
 
 import javaapp.eBook;
 import javafx.stage.Stage;
+
+
 public class eBookController implements Initializable {
 
 
@@ -41,6 +41,7 @@ public class eBookController implements Initializable {
 
     ArrayList<eBook> ebookList = new ArrayList<>();
 
+    final Button deleteButton = new Button("Delete");
     ObservableList<eBook> eBookObservableList = FXCollections.observableArrayList();
 
     @Override
@@ -48,6 +49,9 @@ public class eBookController implements Initializable {
         author.setCellValueFactory(new PropertyValueFactory<eBook, String>("Author"));
         size.setCellValueFactory(new PropertyValueFactory<eBook, Double>("Size"));
         title.setCellValueFactory(new PropertyValueFactory<eBook, String>("Title"));
+        TableView.TableViewSelectionModel<eBook> selectionModel = book_table.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+
     }
 
 //    String[] Extension={"epub"};
@@ -64,6 +68,7 @@ public class eBookController implements Initializable {
             eBookObservableList.add(book);
             book_table.setItems(eBookObservableList);
         }
+
     }
 
     @FXML
@@ -80,6 +85,13 @@ public class eBookController implements Initializable {
                 book_table.setItems(eBookObservableList);
             }
         }
+    }
+
+    @FXML
+    public void removeBook() throws IOException{
+        deleteButton.setOnAction(e -> {
+            book_table.getItems().remove(book_table.getSelectionModel().getSelectedItem());
+        });
     }
     private Stage primaryStage;
 
