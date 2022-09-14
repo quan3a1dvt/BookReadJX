@@ -14,10 +14,10 @@
    <top>
       <Pane prefHeight="86.0" prefWidth="900.0" BorderPane.alignment="CENTER">
          <children>
-            <SplitMenuButton mnemonicParsing="false" onMouseClicked="#addBookClick" prefHeight="78.0" prefWidth="53.0">
+            <SplitMenuButton mnemonicParsing="false" onMouseClicked="#addBookClick" prefHeight="78.0" prefWidth="0.0">
               <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
+                <MenuItem mnemonicParsing="false" onAction="#addBookSingleFolderClick" text="Add books from single folder" />
+                <MenuItem mnemonicParsing="false" text="Add books from folder and sub-folder" />
               </items>
                <rotationAxis>
                   <Point3D />
@@ -36,9 +36,9 @@
    <center>
       <TableView fx:id="book_table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="title" prefWidth="510.0" text="Title" />
-          <TableColumn fx:id="author" prefWidth="193.0" text="Author" />
-            <TableColumn prefWidth="117.0" text="Size" />
+          <TableColumn fx:id="title" prefWidth="241.0" text="Title" />
+          <TableColumn fx:id="author" prefWidth="141.0" text="Author" />
+            <TableColumn fx:id="size" prefWidth="78.0" text="Size" />
         </columns>
       </TableView>
    </center>
