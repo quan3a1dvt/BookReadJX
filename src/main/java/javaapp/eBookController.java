@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,12 +31,12 @@ import java.util.ResourceBundle;
 import javaapp.book.epub.Epub;
 import javafx.stage.Stage;
 
+import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 
 public class eBookController implements Initializable {
 
-    public static final Path READER_LIBRARY_PATH = Paths.get(System.getProperty("user.home"), "ReaderLibrary");
-    public static final Path READER_LIBRARY_DATA_PATH = Paths.get(System.getProperty("user.home"), "ReaderLibrary", "Data");
+
 
     @FXML
     private ImageView add_book;
@@ -45,22 +46,25 @@ public class eBookController implements Initializable {
     private TableView<Book> book_table;
 
     @FXML
+    private TableColumn<Book, String> title;
+    @FXML
     private TableColumn<Book, String> author;
-
+    @FXML
+    private TableColumn<Book, String> date;
     @FXML
     private TableColumn<Book, Double> size;
 
-    @FXML
-    private TableColumn<Book, String> title;
+
 
 
     ObservableList<Book> eBookObservableList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
-//        size.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
+        author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
+        date.setCellValueFactory(cell -> cell.getValue().getMetadata().dateProperty());
+        //        size.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         TableView.TableViewSelectionModel<Book> selectionModel = book_table.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
         book_table.setItems(eBookObservableList);
@@ -83,30 +87,12 @@ public class eBookController implements Initializable {
                 Epub epub = new Epub(path);
 
 
-
                 // Attempt to initialize the epub with its content.opf file.
                 // If it was not found, log an error and continue to the next book.
                 boolean result = epub.loadMetadata(false);
                 if (result) {
                     eBookObservableList.add(epub);
-
-                    // add epub book
-//                    Platform.runLater(() -> {
-//                        BookIconNode node = new BookIconNode(epub);
-//                        allBooks.getChildren().add(node);
-//
-//                        // makeshift recent section
-//                        if(eBookObservableList.indexOf(epub) < 6) {
-//                            recentBooks.getChildren().add(node);
-//                        }
-//
-//                        // on click, open the book
-//                        node.setOnMouseClicked(event -> {
-//                            sidebar.display(node.getBook()); // ??????
-//                        });
-//                    });
                 } else {
-                    // TODO: still add book, but have invalid cover/warning marker on it?
                     System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
                 }
             }).start();
@@ -143,18 +129,49 @@ public class eBookController implements Initializable {
         }
     }
     @FXML
-    void removeBook(KeyEvent event) {
+    void tableKeyPress(KeyEvent event) {
+
+        //Delete books selected when press delete
+
         if (event.getCode() == KeyCode.DELETE){
             eBookObservableList.removeAll(book_table.getSelectionModel().getSelectedItems());
             book_table.getSelectionModel().clearSelection();
         }
+
+        // Review book selected when key arrow press
+        reviewTableSelectedBook();
     }
     @FXML
-    void selectBook(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY){
-            Book selectedBook = book_table.getSelectionModel().getSelectedItem();
-            if (selectedBook != null)
-                selectedBookCover.setImage(selectedBook.getCover());
+    void tableMouseClick(MouseEvent event) {
+
+        // Review book selected when mouse click
+        reviewTableSelectedBook();
+    }
+
+    // Show selected book info on right panel
+    void reviewTableSelectedBook() {
+        Book selectedBook = book_table.getSelectionModel().getSelectedItem();
+        if (selectedBook != null){
+            selectedBookCover.setImage(selectedBook.getCover());
+            Image img = selectedBookCover.getImage();
+            double w = 0;
+            double h = 0;
+
+            double ratioX = selectedBookCover.getFitWidth() / img.getWidth();
+            double ratioY = selectedBookCover.getFitHeight() / img.getHeight();
+
+            double reducCoeff = 0;
+            if (ratioX >= ratioY) {
+                reducCoeff = ratioY;
+            } else {
+                reducCoeff = ratioX;
+            }
+
+            w = img.getWidth() * reducCoeff;
+            h = img.getHeight() * reducCoeff;
+
+            selectedBookCover.setX((selectedBookCover.getFitWidth() - w) / 2);
+            selectedBookCover.setY((selectedBookCover.getFitHeight() - h) / 2);
         }
     }
     private Stage primaryStage;

@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Point3D?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.eBookController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.eBookController">
    <top>
       <Pane prefHeight="79.0" prefWidth="900.0" BorderPane.alignment="CENTER">
          <children>
@@ -34,26 +36,34 @@
       </Pane>
    </top>
    <center>
-      <TableView fx:id="book_table" onKeyPressed="#removeBook" onMouseClicked="#selectBook" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="book_table" onKeyPressed="#tableKeyPress" onMouseClicked="#tableMouseClick" prefHeight="462.0" prefWidth="783.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="title" prefWidth="241.0" text="Title" />
           <TableColumn fx:id="author" prefWidth="141.0" text="Author" />
-            <TableColumn fx:id="size" prefWidth="74.0" text="Size" />
-            <TableColumn prefWidth="75.0" text="Column X" />
+            <TableColumn fx:id="date" prefWidth="74.0" text="Date" />
+            <TableColumn fx:id="size" prefWidth="75.0" text="Size (MB)" />
             <TableColumn prefWidth="75.0" text="Column X" />
         </columns>
       </TableView>
    </center>
    <left>
-      <Pane prefHeight="321.0" prefWidth="165.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="321.0" prefWidth="165.0" BorderPane.alignment="CENTER">
+         <children>
+            <TitledPane expanded="false" prefHeight="200.0" prefWidth="165.0" />
+            <TitledPane expanded="false" layoutY="200.0" prefHeight="200.0" prefWidth="165.0" />
+         </children></Pane>
    </left>
    <right>
-      <Pane prefHeight="321.0" prefWidth="132.0" BorderPane.alignment="CENTER">
+      <Pane prefHeight="462.0" prefWidth="164.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="selectedBookCover" fitHeight="175.0" fitWidth="114.0" layoutX="9.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="selectedBookCover" fitHeight="211.0" fitWidth="164.0" pickOnBounds="true" preserveRatio="true">
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </ImageView>
          </children></Pane>
    </right>
    <bottom>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <BorderPane prefHeight="24.0" prefWidth="1137.0" BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>

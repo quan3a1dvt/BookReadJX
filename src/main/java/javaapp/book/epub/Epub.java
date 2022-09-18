@@ -24,14 +24,17 @@ import java.util.stream.Stream;
 
 public class Epub implements Book {
     final private Path root;
+
     private EpubMetadata metadata;
-    public Epub(Path root)  {
-        String path = "../../resources/eBookLib";
+    public Epub(Path root) {
         this.root = root.toAbsolutePath();
         loadMetadata(true);
+        addBookToLib();
         initDataDirectory();
+        extractOpf();
         extractImages();
         extractCover();
+
     }
     public boolean loadMetadata(boolean force) {
         if(this.metadata != null && !force) {
@@ -86,6 +89,10 @@ public class Epub implements Book {
         }
 
         return Stream.empty();
+    }
+
+    public void extractOpf(){
+
     }
 
     /**
@@ -227,7 +234,16 @@ public class Epub implements Book {
         int endIndex = from.indexOf(end, startIndex);
         return from.substring(startIndex, endIndex);
     }
-
+    public void addBookToLib() {
+        Path bookLibPath = Paths.get(String.valueOf(READER_LIBRARY_PATH), this.root.getFileName().toString());
+        if (!Files.exists(bookLibPath)) {
+            try {
+                Files.copy(this.root, bookLibPath);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+    }
     public void initDataDirectory() {
         Path dataDirectory = getDataDirectory();
 

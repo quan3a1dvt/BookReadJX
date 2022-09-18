@@ -6,6 +6,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class EpubMetadata {
 
     private final StringProperty title = new SimpleStringProperty();
@@ -48,12 +54,24 @@ public class EpubMetadata {
         String identifier = retrieve(metadata, "dc:identifier");
         String relation = retrieve(metadata, "dc:relation");
         String publisher = retrieve(metadata, "dc:publisher");
-        String date = retrieve(metadata, "dc:date");
+        String date = formatDate(retrieve(metadata, "dc:date"));
         String subject = retrieve(metadata, "dc:subject");
         String language = retrieve(metadata, "dc:language");
         return new EpubMetadata(title, creator, contributor, identifier, relation, publisher, date, subject, language);
     }
 
+    private static String formatDate(String oridate) {
+        DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        DateFormat targetFormat = new SimpleDateFormat("dd MMM yyyy");
+        Date date = null;
+        try {
+            date = originalFormat.parse(oridate.substring(0,10));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        String formattedDate = targetFormat.format(date);
+        return formattedDate;
+    }
     private static String retrieve(Element metadata, String tag) {
         Node item = metadata.getElementsByTagName(tag).item(0);
         return item == null ? "" : item.getTextContent();
