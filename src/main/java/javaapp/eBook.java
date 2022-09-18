@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.image.Image;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -31,12 +32,18 @@ public class eBook {
     public Double getSize() {
         return size;
     }
-
+    public Image getImage() {
+        return image;
+    }
     private String author;
     private String title;
     private Double size;
 
-    private String Date;
+    private String date;
+
+
+
+    private Image image;
     public eBook(String path) throws IOException{
         this.path = path;
         File file = new File(path);
@@ -46,6 +53,7 @@ public class eBook {
         List<Author> authors = book.getMetadata().getAuthors();
         this.author = authors.get(0).getFirstname() + " " + authors.get(0).getLastname();
         this.size = Math.round((Double.valueOf(file.length()) / (1024 * 1024)) * 10.0) / 10.0;
+        this.image = new Image(book.getCoverImage().getInputStream());
     }
     public void setPath(String path){
         this.path = path;

@@ -34,7 +34,7 @@
       </Pane>
    </top>
    <center>
-      <TableView fx:id="book_table" onKeyPressed="#removeBook" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="book_table" onKeyPressed="#removeBook" onMouseClicked="#selectBook" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="title" prefWidth="241.0" text="Title" />
           <TableColumn fx:id="author" prefWidth="141.0" text="Author" />
@@ -45,10 +45,13 @@
       </TableView>
    </center>
    <left>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="321.0" prefWidth="165.0" BorderPane.alignment="CENTER" />
    </left>
    <right>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="321.0" prefWidth="132.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="selectedBookCover" fitHeight="175.0" fitWidth="114.0" layoutX="9.0" pickOnBounds="true" preserveRatio="true" />
+         </children></Pane>
    </right>
    <bottom>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
