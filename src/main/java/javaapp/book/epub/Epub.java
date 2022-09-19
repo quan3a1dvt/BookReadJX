@@ -4,7 +4,6 @@ import javaapp.book.Book;
 import javafx.scene.image.Image;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;

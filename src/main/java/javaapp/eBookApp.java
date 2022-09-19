@@ -15,7 +15,7 @@ public class eBookApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("Hello!");
         primaryStage.setScene(scene);
