@@ -219,7 +219,8 @@ public class Epub implements Book {
     public Image getCover(){
         Path coverLocation = getDataDirectory().resolve("cover.png");
         if(Files.exists(coverLocation)) {
-            File cover = new File(coverLocation.toUri());
+            System.out.println(coverLocation);
+            File cover = new File(coverLocation.toUri().toString());
             return new Image(String.valueOf(cover));
         }
         return null;
