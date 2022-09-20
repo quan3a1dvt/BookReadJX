@@ -9,4 +9,6 @@ module com.example.javaapp {
 
     opens javaapp to javafx.fxml;
     exports javaapp;
+    exports javaapp.helper;
+    opens javaapp.helper to javafx.fxml;
 }

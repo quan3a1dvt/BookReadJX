@@ -1,9 +1,9 @@
 package javaapp.book;
 
-public class Spine {
+public class SpineEntry {
     private final String idref;
 
-    public Spine(String idref) {
+    public SpineEntry(String idref) {
         this.idref = idref;
     }
 

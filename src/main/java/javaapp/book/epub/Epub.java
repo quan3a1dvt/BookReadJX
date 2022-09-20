@@ -1,14 +1,18 @@
 package javaapp.book.epub;
 
 import javaapp.book.Book;
+import javaapp.book.ManifestEntry;
+import javaapp.book.SpineEntry;
 import javafx.scene.image.Image;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -23,7 +27,9 @@ public class Epub implements Book {
 
     private EpubMetadata metadata;
 
-    private List<String> spine;
+    private List<ManifestEntry> manifest;
+    private List<SpineEntry> spine;
+
     public Epub(Path root) {
         this.root = root.toAbsolutePath();
         loadMetadata(true);
@@ -56,6 +62,41 @@ public class Epub implements Book {
         }
 
         return false;
+    }
+    public void loadManifest(boolean force) {
+        if(this.manifest != null && !force) {
+            return;
+        }
+
+        manifest = new ArrayList<>();
+
+        // Load content.opf XML file
+        String content_opf = readContentOPF();
+
+        if(content_opf != null) {
+            // Parse XML
+            try {
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document parsed = builder.parse(new InputSource(new StringReader(content_opf)));
+                parsed.normalize();
+
+                // Grab the manifest tag [<manifest>]
+                Element manifestNode = (Element) parsed.getElementsByTagName("manifest").item(0);
+                NodeList manifestChildren = manifestNode.getChildNodes();
+                for(int i = 0; i < manifestChildren.getLength(); i++) {
+                    Node entry = manifestChildren.item(i);
+
+                    if(entry.getNodeType() == Node.ELEMENT_NODE) {
+                        String id = entry.getAttributes().getNamedItem("id").getTextContent();
+                        String href = entry.getAttributes().getNamedItem("href").getTextContent();
+                        String mediaType = entry.getAttributes().getNamedItem("media-type").getTextContent();
+                        manifest.add(new ManifestEntry(id, href, mediaType));
+                    }
+                }
+            } catch (Exception any) {
+                any.printStackTrace();
+            }
+        }
     }
     public void loadSpine(boolean force) {
         if(this.spine != null && !force) {
@@ -90,6 +131,7 @@ public class Epub implements Book {
             }
         }
     }
+
     public String readContentOPF() {
         return read(path -> path.getFileName() != null && path.getFileName().toString().contains("content.opf"));
     }
@@ -160,7 +202,20 @@ public class Epub implements Book {
 
         return metadata;
     }
+    public List<ManifestEntry> getManifest() {
+        if(manifest == null) {
+            loadManifest(true);
+        }
 
+        return manifest;
+    }
+
+    public List<SpineEntry> getSpine() {
+        if (spine == null) {
+            loadSpine(true);
+        }
+        return spine;
+    }
     public Path getImageDirectory() {
         return Paths.get(getDataDirectory().toString(), "Images");
     }
@@ -170,7 +225,16 @@ public class Epub implements Book {
         String fileName = root.getFileName().toString();
         return Paths.get(javaapp.book.Book.READER_LIBRARY_DATA_PATH.toString(), fileName.substring(0, fileName.lastIndexOf(".")));
     }
+    public String readSection(SpineEntry spineEntry) {
+        Optional<ManifestEntry> first = getManifest().stream().filter(entry -> entry.getId().equals(spineEntry.getIdref())).findFirst();
 
+        // If a manifest entry was found that matches the given spine entry, read the contents and return it.
+        if(first.isPresent()) {
+            return read(path -> path.toString().contains(first.get().getHref()));
+        }
+
+        return "";
+    }
 
     public void extractCover() {
         Path coverLocation = getDataDirectory().resolve("cover.png");

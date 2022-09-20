@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public interface Book {
 
@@ -21,4 +22,9 @@ public interface Book {
     public default Image getCover(){
         return null;
     };
+    public default List<SpineEntry> getSpine() {return null;}
+
+    public default Path getImageDirectory(){return null;}
+
+    public default String readSection(SpineEntry spineEntry) {return null;}
 }

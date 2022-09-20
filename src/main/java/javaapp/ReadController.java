@@ -1,12 +1,18 @@
 package javaapp;
 
+import javaapp.helper.HTMLHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 import javaapp.book.Book;
 
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.scene.web.WebView;
 
 public class ReadController implements Initializable {
@@ -26,7 +32,7 @@ public class ReadController implements Initializable {
     }
     public void Init(){
         book.getSpine().forEach(entry -> {
-            String html = epub.readSection(entry);
+            String html = book.readSection(entry);
 
             // HTML files have src/image tags that reference images from their perspective/directory.
             // Because our HTML file is ""moved"", the references do not link to images properly.
@@ -36,7 +42,7 @@ public class ReadController implements Initializable {
             Matcher matcher = pattern.matcher(html);
             html = matcher.replaceAll(result -> {
                 String group = result.group(1);
-                URI x = Paths.get(epub.getImageDirectory().toString(), group.substring(group.lastIndexOf("/") + 1)).toUri();
+                URI x = Paths.get(book.getImageDirectory().toString(), group.substring(group.lastIndexOf("/") + 1)).toUri();
                 return String.format("src=\"%s\"", x);
             });
 

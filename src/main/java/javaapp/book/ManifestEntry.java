@@ -1,11 +1,11 @@
 package javaapp.book;
 
-public class Manifest {
+public class ManifestEntry {
     private final String id;
     private final String href;
     private final String mediaType;
 
-    public Manifest(String id, String href, String mediaType) {
+    public ManifestEntry(String id, String href, String mediaType) {
         this.id = id;
         this.href = href;
         this.mediaType = mediaType;
