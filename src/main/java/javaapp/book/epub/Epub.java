@@ -14,10 +14,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -25,6 +22,8 @@ public class Epub implements Book {
     final private Path root;
 
     private EpubMetadata metadata;
+
+    private List<String> spine;
     public Epub(Path root) {
         this.root = root.toAbsolutePath();
         loadMetadata(true);
@@ -57,6 +56,39 @@ public class Epub implements Book {
         }
 
         return false;
+    }
+    public void loadSpine(boolean force) {
+        if(this.spine != null && !force) {
+            return;
+        }
+
+        spine = new ArrayList<>();
+
+        // Load content.opf XML file
+        String content_opf = readContentOPF();
+
+        if(content_opf != null) {
+            // Parse XML
+            try {
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document parsed = builder.parse(new InputSource(new StringReader(content_opf)));
+                parsed.normalize();
+
+                // Grab the manifest tag [<manifest>]
+                Element manifestNode = (Element) parsed.getElementsByTagName("spine").item(0);
+                NodeList manifestChildren = manifestNode.getChildNodes();
+                for(int i = 0; i < manifestChildren.getLength(); i++) {
+                    Node entry = manifestChildren.item(i);
+
+                    if(entry.getNodeType() == Node.ELEMENT_NODE) {
+                        String idref = entry.getAttributes().getNamedItem("idref").getTextContent();
+                        spine.add(new SpineEntry(idref));
+                    }
+                }
+            } catch (Exception any) {
+                any.printStackTrace();
+            }
+        }
     }
     public String readContentOPF() {
         return read(path -> path.getFileName() != null && path.getFileName().toString().contains("content.opf"));

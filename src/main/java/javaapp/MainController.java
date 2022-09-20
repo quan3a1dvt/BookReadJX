@@ -2,13 +2,13 @@ package javaapp;
 import java.io.File;
 
 import javaapp.book.Book;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -18,10 +18,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.DirectoryChooser;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,7 @@ import javafx.stage.Stage;
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 
-public class eBookController implements Initializable {
+public class MainController implements Initializable {
 
 
 
@@ -64,10 +63,29 @@ public class eBookController implements Initializable {
         title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
         author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         date.setCellValueFactory(cell -> cell.getValue().getMetadata().dateProperty());
-        //        size.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         TableView.TableViewSelectionModel<Book> selectionModel = book_table.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
         book_table.setItems(eBookObservableList);
+        book_table.setOnMouseClicked((MouseEvent event) -> {
+
+            // Review book selected when mouse click
+            reviewTableSelectedBook();
+
+            // Read book when double click
+            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2){
+                open();
+            }
+        });
+        book_table.setOnKeyPressed((KeyEvent event) -> {
+            //Delete books selected when press delete
+            if (event.getCode() == KeyCode.DELETE){
+                eBookObservableList.removeAll(book_table.getSelectionModel().getSelectedItems());
+                book_table.getSelectionModel().clearSelection();
+            }
+
+            // Review book selected when key arrow press
+            reviewTableSelectedBook();
+        });
         try {
             Init();
         } catch (Exception e) {
@@ -128,27 +146,7 @@ public class eBookController implements Initializable {
             }
         }
     }
-    @FXML
-    void tableKeyPress(KeyEvent event) {
 
-        //Delete books selected when press delete
-
-        if (event.getCode() == KeyCode.DELETE){
-            eBookObservableList.removeAll(book_table.getSelectionModel().getSelectedItems());
-            book_table.getSelectionModel().clearSelection();
-        }
-
-        // Review book selected when key arrow press
-        reviewTableSelectedBook();
-    }
-    @FXML
-    void tableMouseClick(MouseEvent event) {
-
-        // Review book selected when mouse click
-        reviewTableSelectedBook();
-    }
-
-    // Show selected book info on right panel
     void reviewTableSelectedBook() {
         Book selectedBook = book_table.getSelectionModel().getSelectedItem();
         if (selectedBook != null){
@@ -172,6 +170,29 @@ public class eBookController implements Initializable {
 
             selectedBookCover.setX((selectedBookCover.getFitWidth() - w) / 2);
             selectedBookCover.setY((selectedBookCover.getFitHeight() - h) / 2);
+        }
+    }
+
+    public void open() {
+        Book selectedBook = book_table.getSelectionModel().getSelectedItem();
+        FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Stage stage = new Stage();
+        stage.setTitle("Hello!");
+        stage.setScene(scene);
+        stage.show();
+        try {
+            ReadController controller = (ReadController) fxmlLoader.getController();
+
+            controller.setPrimaryStage(stage);
+            controller.setBook(selectedBook);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
     private Stage primaryStage;

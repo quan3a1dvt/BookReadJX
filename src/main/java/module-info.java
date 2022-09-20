@@ -5,6 +5,7 @@ module com.example.javaapp {
     requires org.kordamp.ikonli.javafx;
     requires epublib.core;
     requires java.xml;
+    requires javafx.web;
 
     opens javaapp to javafx.fxml;
     exports javaapp;

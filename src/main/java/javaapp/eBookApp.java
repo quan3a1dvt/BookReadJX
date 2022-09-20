@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
+
 import java.io.IOException;
 
 public class eBookApp extends Application {
@@ -21,7 +21,7 @@ public class eBookApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         try {
-            eBookController controller = (eBookController) fxmlLoader.getController();
+            MainController controller = (MainController) fxmlLoader.getController();
 
             //set stage
             controller.setPrimaryStage(primaryStage);

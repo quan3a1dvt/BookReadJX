@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.eBookController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.MainController">
    <top>
       <Pane prefHeight="79.0" prefWidth="900.0" BorderPane.alignment="CENTER">
          <children>
@@ -36,7 +36,7 @@
       </Pane>
    </top>
    <center>
-      <TableView fx:id="book_table" onKeyPressed="#tableKeyPress" onMouseClicked="#tableMouseClick" prefHeight="462.0" prefWidth="783.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="book_table" prefHeight="462.0" prefWidth="783.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="title" prefWidth="241.0" text="Title" />
           <TableColumn fx:id="author" prefWidth="141.0" text="Author" />
