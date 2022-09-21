@@ -1,6 +1,7 @@
 package javaapp;
 import java.io.File;
 
+import com.ea.async.Async;
 import javaapp.book.Book;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -60,6 +61,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
         author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         date.setCellValueFactory(cell -> cell.getValue().getMetadata().dateProperty());

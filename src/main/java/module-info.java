@@ -6,6 +6,9 @@ module com.example.javaapp {
     requires epublib.core;
     requires java.xml;
     requires javafx.web;
+    requires jdk.jsobject;
+    requires php.java.bridge;
+    requires ea.async;
 
     opens javaapp to javafx.fxml;
     exports javaapp;
