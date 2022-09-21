@@ -98,13 +98,14 @@ public class HTMLHelper {
         subPage += getTemplateEnd(html);
         return subPage;
     }
-    public static List<String> getSubPages(String html, WebView view){
+    public static List<String> getSubPages(String html, WebViewHelper view){
         List<String> body = getBody(html);
+        System.out.println(body.size());
         List<String> subPages = new ArrayList<>();
         int start = 0;
-        int now = 0;
+        int now = 6;
         double htmlHeight = 0;
-        double preHtmlHeight = 0;
+        double preHtmlHeight = -1;
         WebEngine engine = view.getEngine();
         AtomicReference<String> state = new AtomicReference<>("succeeded");
 //        engine.documentProperty().addListener(new ChangeListener<Document>() {
@@ -128,66 +129,64 @@ public class HTMLHelper {
                 ended.set(true);
             }
         });
-        int finalStart = start;
-        int finalNow = now;
-        new Thread(new Runnable() {
+        int check = 0;
+
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                view.getEngine().loadContent(getSubPage(html, finalStart, finalNow));
+                System.out.println("bruh");
             }
-        }).start();
+        });
+        t.start();
 
-        while(true) {
+//        while(true) {
 
-//            String htmlHeightString = view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')").toString();
-//            System.out.println(htmlHeightString);
-//            double htmlHeight = Integer.parseInt(htmlHeightString.substring(0, htmlHeightString.length() - 2));
-//            engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-//                if (newState == Worker.State.SUCCEEDED) {
-//                    check.set(1);
+////            String htmlHeightString = view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')").toString();
+////            System.out.println(htmlHeightString);
+////            double htmlHeight = Integer.parseInt(htmlHeightString.substring(0, htmlHeightString.length() - 2));
+////            engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+////                if (newState == Worker.State.SUCCEEDED) {
+////                    check.set(1);
+////                }
+////            });
+//
+////            ExecutorService executor = Executors.newFixedThreadPool(10);
+////            CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(view.getEngine().loadContent(getSubPage(html, start, now)));
+////            Async.await(future1);
+//            String heightText = view.getEngine().executeScript(
+//                    "window.getComputedStyle(document.body, null).getPropertyValue('height')"
+//            ).toString();
+//            htmlHeight = Double.valueOf(heightText.replace("px", ""));
+//            System.out.println(htmlHeight);
+//            if (preHtmlHeight != htmlHeight) {
+//                preHtmlHeight = htmlHeight;
+//                check = 1;
+//                view.getEngine().loadContent(getSubPage(html, start, now));
+//
+//
+//                double viewHeight = view.getHeight();
+////                System.out.println(htmlHeight + " " + viewHeight + " " + start + " " + now);
+//                if (htmlHeight == preHtmlHeight) {
+//                    continue;
 //                }
-//            });
-
-//            ExecutorService executor = Executors.newFixedThreadPool(10);
-//            CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(view.getEngine().loadContent(getSubPage(html, start, now)));
-//            Async.await(future1);
-            if (ended.get() == true) {
-                int finalStart1 = start;
-                int finalNow1 = now;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.getEngine().loadContent(getSubPage(html, finalStart1, finalNow1));
-                    }
-                }).start();
-                ended.set(false);
-            }
-
-            String heightText = view.getEngine().executeScript(
-                    "window.getComputedStyle(document.body, null).getPropertyValue('height')"
-            ).toString();
-            htmlHeight = Double.valueOf(heightText.replace("px", ""));
-            double viewHeight = view.getHeight();
-//            System.out.println(htmlHeight + " " + viewHeight + " " + start + " " + now);
-            if (htmlHeight == preHtmlHeight){
-                continue;
-            }
-            if (htmlHeight > viewHeight) {
-                //                System.out.println(start + " " + now);
-                subPages.add(getSubPage(html, start, now - 1));
-                start = now;
-            } else {
-                if (now >= body.size() - 1) {
-                    //                    System.out.println(start + " " + now);
-                    subPages.add(getSubPage(html, start, now));
-                    start = now;
-                    break;
-                }
-                if (htmlHeight > preHtmlHeight)
-                    now += 1;
-            }
-
-        }
+//                if (htmlHeight > viewHeight) {
+//                    //                System.out.println(start + " " + now);
+//                    subPages.add(getSubPage(html, start, now - 1));
+//                    start = now;
+//                } else {
+//                    if (now >= body.size() - 1) {
+//                        //                    System.out.println(start + " " + now);
+//                        subPages.add(getSubPage(html, start, now));
+//                        start = now;
+//                        break;
+//                    }
+//
+//                    now += 1;
+//
+//
+//                }
+//            }
+//        }
         return subPages;
     }
 

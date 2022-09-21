@@ -75,7 +75,7 @@ public class ReadController implements Initializable {
     }
     public void setBook(Book book){
         this.book = book;
-        page = 0;
+        page = 3;
         Init();
         subPages = HTMLHelper.getSubPages(pages.get(page), view);
     }
