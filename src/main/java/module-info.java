@@ -9,6 +9,7 @@ module com.example.javaapp {
     requires jdk.jsobject;
     requires php.java.bridge;
     requires ea.async;
+    requires org.jsoup;
 
     opens javaapp to javafx.fxml;
     exports javaapp;

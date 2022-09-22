@@ -52,7 +52,28 @@ public class ReadController implements Initializable {
 //                System.out.println(view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')"));
 //                System.out.println(view.getHeight());
             }
+            else if (event.getCode().equals(KeyCode.UP)){
+                String heightText = view.getEngine().executeScript(
+                        "window.getComputedStyle(document.body, null).getPropertyValue('height')"
+                ).toString();
+                System.out.println(Double.valueOf(heightText.replace("px", "")));
+            }
+            else if (event.getCode().equals(KeyCode.DOWN)){
+                String x = "<?xml version='1.0' encoding='utf-8'?>\n" +
+                        "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                        "  <head>\n" +
+                        "\t<title>Chuong 1</title>\n" +
+                        "\t<meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\"/><link href=\"stylesheet.css\" type=\"text/css\" rel=\"stylesheet\"/><style type=\"text/css\">\n" +
+                        "\t\t@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head>\n" +
+                        "  <body class=\"calibre\"><h1 class=\"calibre15\" id=\"calibre_pb_60\"><span class=\"calibre16\"><a id=\"filepos1393470\" class=\"calibre18\">Chương 29</a></span></h1><div class=\"calibre2\"></div><p class=\"calibre8\"><span class=\"calibre4\"><span><span class=\"calibre6\">Bác Alexandra đứng lên và với tay lên chỗ bệ lò sưởi. Ông Tate nhỏm dậy, nhưng bác từ chối sự giúp đỡ. Như một ngoại lệ trong cuộc đời ông, bản năng lịch sự của bố Atticus đã quên không thể hiện: ông ngồi ỳ tại chỗ.</span></span></span></p>\n" +
+                        "</body>\n" +
+                        "</html>";
+                view.getEngine().loadContent(x);
+            }
+            else if (event.getCode().equals(KeyCode.CONTROL)){
 
+                view.getEngine().loadContent(pages.get(2));
+            }
             // Right-key => go one page forwards
             else if (event.getCode().equals(KeyCode.RIGHT)) {
 
@@ -60,6 +81,7 @@ public class ReadController implements Initializable {
 //                view.getEngine().loadContent(pages.get(page));
 //                System.out.println(view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')"));
 //                System.out.println(view.getHeight());
+
                 if (curSubPage >= subPages.size() - 1){
                     page = Math.min(pages.size() - 1, page + 1);
                     subPages = HTMLHelper.getSubPages(pages.get(page), view);
@@ -75,7 +97,7 @@ public class ReadController implements Initializable {
     }
     public void setBook(Book book){
         this.book = book;
-        page = 3;
+        page = 31;
         Init();
         subPages = HTMLHelper.getSubPages(pages.get(page), view);
     }
