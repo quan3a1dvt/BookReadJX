@@ -34,72 +34,31 @@ public class ReadController implements Initializable {
     @FXML
     private WebView view;
 
-    private List<String> subPages;
 
     private static int page = 0;
-    private int curSubPage = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        subPages = new ArrayList<>();
-
         view.setOnKeyPressed((KeyEvent event) -> {
             System.out.println(page);
             // Left-key => go one page back
             if(event.getCode().equals(KeyCode.LEFT)) {
                 page = Math.max(0, page - 1);
                 view.getEngine().loadContent(pages.get(page));
-//                System.out.println(view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')"));
-//                System.out.println(view.getHeight());
-            }
-            else if (event.getCode().equals(KeyCode.UP)){
-                String heightText = view.getEngine().executeScript(
-                        "window.getComputedStyle(document.body, null).getPropertyValue('height')"
-                ).toString();
-                System.out.println(Double.valueOf(heightText.replace("px", "")));
-            }
-            else if (event.getCode().equals(KeyCode.DOWN)){
-                String x = "<?xml version='1.0' encoding='utf-8'?>\n" +
-                        "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-                        "  <head>\n" +
-                        "\t<title>Chuong 1</title>\n" +
-                        "\t<meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\"/><link href=\"stylesheet.css\" type=\"text/css\" rel=\"stylesheet\"/><style type=\"text/css\">\n" +
-                        "\t\t@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head>\n" +
-                        "  <body class=\"calibre\"><h1 class=\"calibre15\" id=\"calibre_pb_60\"><span class=\"calibre16\"><a id=\"filepos1393470\" class=\"calibre18\">Chương 29</a></span></h1><div class=\"calibre2\"></div><p class=\"calibre8\"><span class=\"calibre4\"><span><span class=\"calibre6\">Bác Alexandra đứng lên và với tay lên chỗ bệ lò sưởi. Ông Tate nhỏm dậy, nhưng bác từ chối sự giúp đỡ. Như một ngoại lệ trong cuộc đời ông, bản năng lịch sự của bố Atticus đã quên không thể hiện: ông ngồi ỳ tại chỗ.</span></span></span></p>\n" +
-                        "</body>\n" +
-                        "</html>";
-                view.getEngine().loadContent(x);
-            }
-            else if (event.getCode().equals(KeyCode.CONTROL)){
-
-                view.getEngine().loadContent(pages.get(2));
             }
             // Right-key => go one page forwards
             else if (event.getCode().equals(KeyCode.RIGHT)) {
-
-//                page = Math.min(pages.size() - 1, page + 1);
-//                view.getEngine().loadContent(pages.get(page));
-//                System.out.println(view.getEngine().executeScript("window.getComputedStyle(document.body, null).getPropertyValue('height')"));
-//                System.out.println(view.getHeight());
-
-                if (curSubPage >= subPages.size() - 1){
-                    page = Math.min(pages.size() - 1, page + 1);
-                    subPages = HTMLHelper.getSubPages(pages.get(page), view);
-                    curSubPage = 0;
-
-                }
-                else{
-                    curSubPage += 1;
-                }
-                view.getEngine().loadContent(subPages.get(curSubPage));
+                page = Math.min(page + 1, pages.size() - 1);
+                System.out.println(pages.get(page));
+                view.getEngine().loadContent(pages.get(page));
             }
         });
     }
     public void setBook(Book book){
         this.book = book;
-        page = 31;
+        page = 0;
         Init();
-        subPages = HTMLHelper.getSubPages(pages.get(page), view);
+
     }
     // Keep track of all pages & all futures
     List<String> pages = new ArrayList<>();
@@ -123,6 +82,13 @@ public class ReadController implements Initializable {
                 String group = result.group(1);
                 URI x = Paths.get(book.getImageDirectory().toString(), group.substring(group.lastIndexOf("/") + 1)).toUri();
                 return String.format("src=\"%s\"", x);
+            });
+            pattern = Pattern.compile("href=\"([^\"]+)\"");
+            matcher = pattern.matcher(html);
+            html = matcher.replaceAll(result -> {
+                String group = result.group(1);
+                URI x = Paths.get(book.getImageDirectory().toString(), "stylesheet.css").toUri();
+                return String.format("href=\"%s\"", x);
             });
             pages.add(html);
 //            // Retrieve the template (HTML without the body) from the current spine entry.

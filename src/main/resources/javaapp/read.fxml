@@ -3,4 +3,4 @@
 <?import javafx.scene.web.WebView?>
 
 
-<WebView fx:id="view" prefHeight="14.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.ReadController" />
+<WebView fx:id="view" prefHeight="501.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.ReadController" />
