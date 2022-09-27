@@ -225,6 +225,14 @@ public class Epub implements Book {
         String fileName = root.getFileName().toString();
         return Paths.get(javaapp.book.Book.READER_LIBRARY_DATA_PATH.toString(), fileName.substring(0, fileName.lastIndexOf(".")));
     }
+
+    public Path getConfigDirectory(){
+        return Book.READER_LIBRARY_CONFIG_PATH;
+    }
+    public Path getCssPath(){
+
+        return Paths.get(getConfigDirectory().toUri().toString(), "stylesheet.css");
+    }
     public String readSection(SpineEntry spineEntry) {
         Optional<ManifestEntry> first = getManifest().stream().filter(entry -> entry.getId().equals(spineEntry.getIdref())).findFirst();
 

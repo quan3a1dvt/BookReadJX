@@ -5,8 +5,11 @@ import javaapp.helper.HTMLHelper;
 import javaapp.helper.HeightHelper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebEngine;
@@ -19,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -36,11 +40,58 @@ public class ReadController implements Initializable {
 
 
     private static int page = 0;
+    /**
+     * Scrolls to the specified position.
+     * @param view web view that shall be scrolled
+     * @param x horizontal scroll value
+     * @param y vertical scroll value
+     */
+    public void scrollTo(WebView view, int x, int y) {
+        view.getEngine().executeScript("window.scrollTo(" + x + ", " + y + ")");
+    }
 
+    /**
+     * Returns the vertical scroll value, i.e. thumb position.
+     * This is equivalent to {@link javafx.scene.control.ScrollBar#getValue().
+     * @param view
+     * @return vertical scroll value
+     */
+    public int getVScrollValue(WebView view) {
+        return (Integer) view.getEngine().executeScript("document.body.scrollTop");
+    }
+
+    /**
+     * Returns the horizontal scroll value, i.e. thumb position.
+     * This is equivalent to {@link javafx.scene.control.ScrollBar#getValue()}.
+     * @param view
+     * @return horizontal scroll value
+     */
+    public int getHScrollValue(WebView view) {
+        return (Integer) view.getEngine().executeScript("document.body.scrollLeft");
+    }
+
+    /**
+     * Returns the maximum vertical scroll value.
+     * This is equivalent to {@link javafx.scene.control.ScrollBar#getMax()}.
+     * @param view
+     * @return vertical scroll max
+     */
+    public int getHScrollMax(WebView view) {
+        return (Integer) view.getEngine().executeScript("document.body.scrollWidth");
+    }
+
+    /**
+     * Returns the maximum horizontal scroll value.
+     * This is equivalent to {@link javafx.scene.control.ScrollBar#getMax()}.
+     * @param view
+     * @return horizontal scroll max
+     */
+    public int getVScrollMax(WebView view) {
+        return (Integer) view.getEngine().executeScript("document.body.scrollHeight");
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         view.setOnKeyPressed((KeyEvent event) -> {
-            System.out.println(page);
             // Left-key => go one page back
             if(event.getCode().equals(KeyCode.LEFT)) {
                 page = Math.max(0, page - 1);
@@ -48,15 +99,43 @@ public class ReadController implements Initializable {
             }
             // Right-key => go one page forwards
             else if (event.getCode().equals(KeyCode.RIGHT)) {
-                page = Math.min(page + 1, pages.size() - 1);
-                System.out.println(pages.get(page));
-                view.getEngine().loadContent(pages.get(page));
+//                System.out.println(getVScrollValue(view));
+//                System.out.println(getVScrollMax(view));
+                int tmp = getHScrollValue(view) + (int) view.getWidth() ;
+                System.out.print(getHScrollValue(view));
+                System.out.print(" ");
+                System.out.print(view.getWidth());
+                System.out.print(" ");
+                System.out.print(tmp);
+                System.out.print(" ");
+                System.out.print(getHScrollMax(view));
+                System.out.println();
+
+                if (tmp < getHScrollMax(view)){
+                    System.out.println("nice");
+                    scrollTo(view, tmp, 0);
+                }
+                else{
+                    page = Math.min(page + 1, pages.size() - 1);
+                    view.getEngine().loadContent(pages.get(page));
+                }
+
+            }
+        });
+        //view.getEngine().setUserStyleSheetLocation("path/to/style.css");
+        view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+            @Override public void onChanged(Change<? extends Node> change) {
+                Set<Node> deadSeaScrolls = view.lookupAll(".scroll-bar");
+                for (Node scroll : deadSeaScrolls) {
+                    scroll.setVisible(false);
+                }
             }
         });
     }
     public void setBook(Book book){
         this.book = book;
         page = 0;
+        view.getEngine().setUserStyleSheetLocation(Paths.get(book.getConfigDirectory().toString(),"bookview.css").toString());
         Init();
 
     }
@@ -86,9 +165,13 @@ public class ReadController implements Initializable {
             pattern = Pattern.compile("href=\"([^\"]+)\"");
             matcher = pattern.matcher(html);
             html = matcher.replaceAll(result -> {
-                String group = result.group(1);
-                URI x = Paths.get(book.getImageDirectory().toString(), "stylesheet.css").toUri();
+                String x = book.getCssPath().toString();
                 return String.format("href=\"%s\"", x);
+            });
+            pattern = Pattern.compile("<!DOCTYPE[^>]+>");
+            matcher = pattern.matcher(html);
+            html = matcher.replaceAll(result -> {
+                return "";
             });
             pages.add(html);
 //            // Retrieve the template (HTML without the body) from the current spine entry.
