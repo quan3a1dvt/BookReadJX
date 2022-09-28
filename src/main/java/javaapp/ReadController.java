@@ -47,7 +47,8 @@ public class ReadController implements Initializable {
      * @param y vertical scroll value
      */
     public void scrollTo(WebView view, int x, int y) {
-        view.getEngine().executeScript("window.scrollTo(" + x + ", " + y + ")");
+     //   System.out.println(Integer.valueOf(x).toString() + " " + Integer.valueOf(y).toString());
+        view.getEngine().executeScript("window.scrollTo(" + (x - 40) + ", " + y + ")");
     }
 
     /**
@@ -110,8 +111,8 @@ public class ReadController implements Initializable {
                 System.out.print(" ");
                 System.out.print(getHScrollMax(view));
                 System.out.println();
-
-                if (tmp < getHScrollMax(view)){
+//                tmp = tmp - tmp * 2 / 100;
+                if (tmp <  getHScrollMax(view)){
                     System.out.println("nice");
                     scrollTo(view, tmp, 0);
                 }
@@ -131,12 +132,18 @@ public class ReadController implements Initializable {
                 }
             }
         });
+        view.getEngine().executeScript("document.addEventListener(\"keydown\", function(e) {\n" +
+                "    if([\"Space\",\"ArrowUp\",\"ArrowDown\",\"ArrowLeft\",\"ArrowRight\"].indexOf(e.code) > -1) {\n" +
+                "        e.preventDefault();\n" +
+                "    }\n" +
+                "},false);");
     }
     public void setBook(Book book){
         this.book = book;
         page = 0;
-        view.getEngine().setUserStyleSheetLocation(Paths.get(book.getConfigDirectory().toString(),"bookview.css").toString());
+        view.getEngine().setUserStyleSheetLocation(Paths.get(book.getConfigDirectory().toUri().toString(),"bookview.css").toString());
         Init();
+        System.out.println(pages.size());
 
     }
     // Keep track of all pages & all futures
