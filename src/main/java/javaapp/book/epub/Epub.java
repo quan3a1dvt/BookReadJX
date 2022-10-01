@@ -230,8 +230,16 @@ public class Epub implements Book {
         return Book.READER_LIBRARY_CONFIG_PATH;
     }
     public Path getCssPath(){
+        return Paths.get(getConfigDirectory().toString(), "stylesheet.css");
+    }
 
-        return Paths.get(getConfigDirectory().toUri().toString(), "stylesheet.css");
+    public Path getCss(){
+        Path css = Paths.get(getConfigDirectory().toString(), "stylesheet.css");
+        if(Files.exists(css)) {
+            System.out.println(css);
+            return css;
+        }
+        return null;
     }
     public String readSection(SpineEntry spineEntry) {
         Optional<ManifestEntry> first = getManifest().stream().filter(entry -> entry.getId().equals(spineEntry.getIdref())).findFirst();
@@ -329,6 +337,7 @@ public class Epub implements Book {
         }
         return null;
     }
+
     private String find(String from, String start, String end) {
         if(!from.contains(start) || !from.contains(end)) {
             return null;

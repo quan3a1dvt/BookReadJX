@@ -10,6 +10,9 @@ module com.example.javaapp {
     requires php.java.bridge;
     requires ea.async;
     requires org.jsoup;
+    requires jxbrowser;
+    requires jxbrowser.javafx;
+    requires jcef;
 
     opens javaapp to javafx.fxml;
     exports javaapp;

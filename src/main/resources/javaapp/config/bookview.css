@@ -1,0 +1,12 @@
+
+body {
+    -moz-column-count:2; 
+    -webkit-column-count:2; 
+    column-count:2;
+    height: 100%;
+    border:1px solid red;
+    width: 200%;
+    column-span: all;
+    display: block;
+    overflow: auto;
+}
