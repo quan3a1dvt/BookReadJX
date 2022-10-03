@@ -3,11 +3,12 @@
     background-color:lightblue;
     position:relative; 
 } */
-.calibre {
+body {
     -webkit-column-count:2; 
     column-count:2;
     column-fill:auto; 
     height:100%;
+    text-indent: 6%;
     font-family: "Times New Roman", Times, serif;
     /* border:1px solid red; */
     background-color: #121212;
@@ -21,10 +22,7 @@
     column-span: all;
     -webkit-column-break-inside: avoid;
     display: block;
-    
+
     overflow: auto;
 }
 
-.calibre:empty{
-    display: none;
-}

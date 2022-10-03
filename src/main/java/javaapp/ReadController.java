@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javaapp.book.Book;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -188,10 +189,10 @@ public class ReadController implements Initializable {
     }
     public void setBook(Book book){
         this.book = book;
-        page = 0;
+        page = 1;
       //  view.getEngine().setUserStyleSheetLocation(Paths.get(book.getConfigDirectory().toString(), "bookview.css").toUri().toString());
         Init();
-        System.out.println(pages.size());
+        view.getEngine().loadContent(pages.get(page));
 
     }
     // Keep track of all pages & all futures
@@ -211,10 +212,24 @@ public class ReadController implements Initializable {
                     .findFirst()
                     .ifPresent(org.jsoup.nodes.Node::remove);
 
+            // set style for html
             for (Element e: doc.select("link[href$=.css]")){
-                e.attr("href", book.getCssPath().toUri().toString());
+                try {
+                    e.attr("href", Paths.get(eBookApp.class.getResource("config/stylesheet.css").toURI()).toUri().toString());
+                } catch (URISyntaxException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
+//            for (Element e: doc.select("img")){
+//                e.attr("style", "width:100%;height:100%;margin:0;padding:0;");
+//            }
 
+//            try {
+//                doc.appendElement(String.format("link href=\"%s\" rel=\"stylesheet\" type=\"text/css\"", Paths.get(eBookApp.class.getResource("config/stylesheet.css").toURI()).toUri().toString()));
+//            } catch (URISyntaxException e) {
+//                throw new RuntimeException(e);
+//            }
+//            System.out.println(doc);
             html = doc.toString();
 
             // HTML files have src/image tags that reference images from their perspective/directory.

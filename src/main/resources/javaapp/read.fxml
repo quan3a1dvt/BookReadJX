@@ -4,21 +4,20 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.web.WebView?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="723.0" prefWidth="598.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.ReadController">
    <center>
       <WebView fx:id="view" prefHeight="355.0" prefWidth="583.0" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
-      <Pane prefHeight="22.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="22.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
    </bottom>
    <right>
-      <Pane prefHeight="678.0" prefWidth="23.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="678.0" prefWidth="23.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
    </right>
    <top>
-      <Pane prefHeight="23.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="23.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
    </top>
    <left>
-      <Pane prefHeight="178.0" prefWidth="24.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="178.0" prefWidth="24.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>
