@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.web.WebView?>
@@ -9,7 +10,10 @@
       <WebView fx:id="view" prefHeight="355.0" prefWidth="583.0" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
-      <Pane prefHeight="22.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="22.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="546.0" layoutY="3.0" text="Label" />
+         </children></Pane>
    </bottom>
    <right>
       <Pane prefHeight="678.0" prefWidth="23.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
