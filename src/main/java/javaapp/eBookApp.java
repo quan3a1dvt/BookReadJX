@@ -5,6 +5,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 import java.io.IOException;
 public class eBookApp extends Application {
@@ -17,9 +19,10 @@ public class eBookApp extends Application {
 //    }
     @Override
     public void start(Stage primaryStage) throws IOException {
-
+        System.getProperty( "javafx.runtime.version" );
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        JMetro jmetro = new JMetro(scene, Style.DARK);
         primaryStage.setTitle("Hello!");
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -3,6 +3,8 @@ import java.io.File;
 
 import com.ea.async.Async;
 import javaapp.book.Book;
+import javaapp.helper.MenuHelper;
+import javaapp.helper.TableHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +18,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.DirectoryChooser;
 
@@ -30,6 +34,7 @@ import java.util.ResourceBundle;
 
 import javaapp.book.epub.Epub;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
@@ -38,68 +43,42 @@ public class MainController implements Initializable {
 
 
 
+
     @FXML
-    private ImageView add_book;
+    private HBox topPane;
+    @FXML
+    private Pane rightPane;
+    @FXML
+    private Pane leftPane;
+    @FXML
+    private Pane bottomPane;
     @FXML
     private ImageView selectedBookCover;
     @FXML
-    private TableView<Book> book_table;
-
+    private TableView<Book> table;
+    private TableHelper tableHelper;
     @FXML
-    private TableColumn<Book, String> title;
-    @FXML
-    private TableColumn<Book, String> author;
-    @FXML
-    private TableColumn<Book, String> date;
-    @FXML
-    private TableColumn<Book, Double> size;
+    private SplitMenuButton addBook;
+    private MenuHelper menuHelper;
 
 
 
-
-    ObservableList<Book> eBookObservableList = FXCollections.observableArrayList();
+    ObservableList<Book> bookObservableList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
-        author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
-        date.setCellValueFactory(cell -> cell.getValue().getMetadata().dateProperty());
-        TableView.TableViewSelectionModel<Book> selectionModel = book_table.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
-        book_table.setItems(eBookObservableList);
-        book_table.setOnMouseClicked((MouseEvent event) -> {
-
-            // Review book selected when mouse click
-            reviewTableSelectedBook();
-
-            // Read book when double click
-            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2){
-                open();
-            }
-        });
-        book_table.setOnKeyPressed((KeyEvent event) -> {
-            //Delete books selected when press delete
-            if (event.getCode() == KeyCode.DELETE){
-                eBookObservableList.removeAll(book_table.getSelectionModel().getSelectedItems());
-                book_table.getSelectionModel().clearSelection();
-            }
-
-            // Review book selected when key arrow press
-            reviewTableSelectedBook();
-        });
+        setUI();
+        tableHelper = new TableHelper(table, bookObservableList);
+        menuHelper = new MenuHelper(addBook, bookObservableList, primaryStage);
+        List<Path> booksPath = null;
         try {
-            Init();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void Init() throws Exception{
-        List<Path> booksPath = Files.list(READER_LIBRARY_PATH)
+            booksPath = Files.list(READER_LIBRARY_PATH)
                     .filter(path -> !Files.isDirectory(path))
                     .filter(path -> path.toString().endsWith(".epub"))
                     .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         booksPath.forEach(path -> {
             // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
@@ -111,26 +90,22 @@ public class MainController implements Initializable {
                 // If it was not found, log an error and continue to the next book.
                 boolean result = epub.loadMetadata(false);
                 if (result) {
-                    eBookObservableList.add(epub);
+                    bookObservableList.add(epub);
                 } else {
                     System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
                 }
             }).start();
         });
     }
-    //    String[] Extension={"epub"};
+    private void setUI(){
+        topPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        rightPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        bottomPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+    }
     @FXML
     public void addBookClick() throws Exception{
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Book File");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("EPUB", "*.epub")
-        );
-        File file = fileChooser.showOpenDialog(this.primaryStage);
-        if (file != null) {
-            Epub book = new Epub(Path.of(file.getPath()));
-            eBookObservableList.add(book);
-        }
+
 
     }
 
@@ -144,13 +119,13 @@ public class MainController implements Initializable {
             String fileName = file.toString();
             if (fileName.endsWith("epub")) {
                 Book book = new Epub(Path.of(file.getPath()));
-                eBookObservableList.add(book);
+                bookObservableList.add(book);
             }
         }
     }
 
     void reviewTableSelectedBook() {
-        Book selectedBook = book_table.getSelectionModel().getSelectedItem();
+        Book selectedBook = table.getSelectionModel().getSelectedItem();
         if (selectedBook != null){
             selectedBookCover.setImage(selectedBook.getCover());
             Image img = selectedBookCover.getImage();
@@ -176,7 +151,7 @@ public class MainController implements Initializable {
     }
 
     public void open() {
-        Book selectedBook = book_table.getSelectionModel().getSelectedItem();
+        Book selectedBook = table.getSelectionModel().getSelectedItem();
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
         Scene scene = null;
         try {

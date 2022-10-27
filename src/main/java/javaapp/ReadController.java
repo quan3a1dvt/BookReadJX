@@ -1,9 +1,5 @@
 package javaapp;
 
-import org.cef.CefApp;
-import org.cef.CefClient;
-import org.cef.browser.CefBrowser;
-
 import javaapp.book.SpineEntry;
 import javaapp.helper.HTMLHelper;
 import javaapp.helper.HeightHelper;
@@ -41,13 +37,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.DocumentType;
 import org.jsoup.nodes.Element;
-import com.teamdev.jxbrowser.browser.Browser;
-import com.teamdev.jxbrowser.engine.Engine;
-import com.teamdev.jxbrowser.engine.EngineOptions;
-import com.teamdev.jxbrowser.view.javafx.BrowserView;
 import org.jsoup.select.Elements;
-
-import static com.teamdev.jxbrowser.engine.RenderingMode.HARDWARE_ACCELERATED;
 
 public class ReadController implements Initializable {
 
@@ -110,11 +100,6 @@ public class ReadController implements Initializable {
      */
     public int getVScrollMax(WebView view) {
         return (Integer) view.getEngine().executeScript("document.body.scrollHeight");
-    }
-    private static void loadHtml(Browser browser, String html) {
-        browser.mainFrame().ifPresent(mainFrame -> {
-            mainFrame.loadHtml(html);
-        });
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
