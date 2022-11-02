@@ -16,11 +16,12 @@ public class TableHelper {
     private final TableColumn<Book, String> author;
     private final TableColumn<Book, String> date;
     private final ObservableList<Book> bookObservableList;
+    final private tableCallBacks callbacks;
 
-
-    public TableHelper(TableView<Book> table, ObservableList<Book> bookObservableList) {
+    public TableHelper(TableView<Book> table, ObservableList<Book> bookObservableList, tableCallBacks callbacks) {
         this.table = table;
         this.bookObservableList = bookObservableList;
+        this.callbacks = callbacks;
         this.title = new TableColumn<>("Title");
         this.author = new TableColumn<>("Author");
         this.date = new TableColumn<>("Date");
@@ -40,11 +41,12 @@ public class TableHelper {
 
 //            // Review book selected when mouse click
 //            reviewSelectedBook();
-//
-//            // Read book when double click
-//            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2){
-//                open();
-//            }
+
+            // Read book when double click
+            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2){
+                Book selectedBook = table.getSelectionModel().getSelectedItem();
+                callbacks.onTableOpenBook(selectedBook);
+            }
         });
         table.setOnKeyPressed((KeyEvent event) -> {
             //Delete books selected when press delete
@@ -58,4 +60,9 @@ public class TableHelper {
         });
 
     }
+
+    public interface tableCallBacks {
+        void onTableOpenBook(Book book);
+    }
+
 }

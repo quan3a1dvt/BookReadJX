@@ -1,10 +1,12 @@
 package javaapp;
+
 import java.io.File;
 
 import com.ea.async.Async;
 import javaapp.book.Book;
 import javaapp.helper.MenuHelper;
 import javaapp.helper.TableHelper;
+import javaapp.helper.TreeHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,14 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
-import javafx.stage.DirectoryChooser;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,22 +30,20 @@ import java.util.ResourceBundle;
 
 import javaapp.book.epub.Epub;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
 
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 
-public class MainController implements Initializable {
-
-
+public class MainController implements Initializable, TableHelper.tableCallBacks {
 
 
     @FXML
     private HBox topPane;
     @FXML
     private Pane rightPane;
-    @FXML
-    private Pane leftPane;
     @FXML
     private Pane bottomPane;
     @FXML
@@ -61,15 +55,19 @@ public class MainController implements Initializable {
     private SplitMenuButton addBook;
     private MenuHelper menuHelper;
 
+    @FXML
+    private TreeView<String> tree;
 
+    private TreeHelper treeHelper;
 
     ObservableList<Book> bookObservableList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUI();
-        tableHelper = new TableHelper(table, bookObservableList);
+        tableHelper = new TableHelper(table, bookObservableList, this);
         menuHelper = new MenuHelper(addBook, bookObservableList, primaryStage);
+        treeHelper = new TreeHelper(tree, bookObservableList, primaryStage);
         List<Path> booksPath = null;
         try {
             booksPath = Files.list(READER_LIBRARY_PATH)
@@ -97,36 +95,17 @@ public class MainController implements Initializable {
             }).start();
         });
     }
-    private void setUI(){
+
+    private void setUI() {
         topPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         rightPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+//        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         bottomPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-    }
-    @FXML
-    public void addBookClick() throws Exception{
-
-
-    }
-
-    @FXML
-    public void addBookSingleFolderClick() throws Exception {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Open Book Folder");
-        File folder = directoryChooser.showDialog(this.primaryStage);
-        File filesList[] = folder.listFiles();
-        for (File file : filesList) {
-            String fileName = file.toString();
-            if (fileName.endsWith("epub")) {
-                Book book = new Epub(Path.of(file.getPath()));
-                bookObservableList.add(book);
-            }
-        }
     }
 
     void reviewTableSelectedBook() {
         Book selectedBook = table.getSelectionModel().getSelectedItem();
-        if (selectedBook != null){
+        if (selectedBook != null) {
             selectedBookCover.setImage(selectedBook.getCover());
             Image img = selectedBookCover.getImage();
             double w = 0;
@@ -150,33 +129,32 @@ public class MainController implements Initializable {
         }
     }
 
-    public void open() {
-        Book selectedBook = table.getSelectionModel().getSelectedItem();
+    public void onTableOpenBook(Book book) {
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
         Scene scene = null;
+//        config\pane.css
         try {
             scene = new Scene(fxmlLoader.load());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        JMetro jmetro = new JMetro(scene, Style.DARK);
         Stage stage = new Stage();
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
         try {
             ReadController controller = (ReadController) fxmlLoader.getController();
-
             controller.setPrimaryStage(stage);
-            controller.setBook(selectedBook);
-        } catch(Exception e) {
+            controller.setBook(book);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     private Stage primaryStage;
 
-    public void setPrimaryStage(Stage primaryStage){
+    public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
-
-
 }

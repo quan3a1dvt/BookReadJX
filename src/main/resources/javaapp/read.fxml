@@ -10,18 +10,18 @@
       <WebView fx:id="view" prefHeight="355.0" prefWidth="583.0" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
-      <Pane prefHeight="22.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER">
+      <Pane fx:id="bottomPane" prefHeight="22.0" prefWidth="600.0" stylesheets="@config/pane.css" BorderPane.alignment="CENTER">
          <children>
             <Label layoutX="546.0" layoutY="3.0" text="Label" />
          </children></Pane>
    </bottom>
    <right>
-      <Pane prefHeight="678.0" prefWidth="23.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
+      <Pane fx:id="rightPane" prefHeight="678.0" prefWidth="23.0" BorderPane.alignment="CENTER" />
    </right>
    <top>
-      <Pane prefHeight="23.0" prefWidth="600.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
+      <Pane fx:id="topPane" prefHeight="23.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
    </top>
    <left>
-      <Pane prefHeight="178.0" prefWidth="24.0" styleClass="pane" stylesheets="@config/pane.css" BorderPane.alignment="CENTER" />
+      <Pane fx:id="leftPane" prefHeight="178.0" prefWidth="24.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

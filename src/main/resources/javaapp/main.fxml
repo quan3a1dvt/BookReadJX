@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Rectangle2D?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -13,17 +12,10 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.MainController">
    <center>
-      <TableView fx:id="table" prefHeight="462.0" prefWidth="783.0" BorderPane.alignment="CENTER" />
+      <TableView fx:id="table" BorderPane.alignment="CENTER" />
    </center>
-   <left>
-      <Pane fx:id="leftPane" prefHeight="321.0" prefWidth="165.0" BorderPane.alignment="CENTER">
-         <children>
-            <TitledPane expanded="false" prefHeight="200.0" prefWidth="165.0" />
-            <TitledPane expanded="false" layoutY="200.0" prefHeight="200.0" prefWidth="165.0" />
-         </children></Pane>
-   </left>
    <right>
-      <Pane fx:id="rightPane" prefHeight="462.0" prefWidth="164.0" BorderPane.alignment="CENTER">
+      <Pane fx:id="rightPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="165.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="selectedBookCover" fitHeight="211.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true">
                <viewport>
@@ -38,11 +30,7 @@
    <top>
       <HBox fx:id="topPane" prefHeight="85.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
          <children>
-            <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" onMouseClicked="#addBookClick" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add Book">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#addBookSingleFolderClick" text="Add books from single folder" />
-                  <MenuItem mnemonicParsing="false" text="Add books from folder and sub-folder" />
-               </items>
+            <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add Book">
                <graphic>
                   <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -54,4 +42,7 @@
          </children>
       </HBox>
    </top>
+   <left>
+      <TreeView fx:id="tree" prefHeight="570.0" prefWidth="197.0" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>
