@@ -56,7 +56,7 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     private MenuHelper menuHelper;
 
     @FXML
-    private TreeView<String> tree;
+    private TreeTableView<?> tree;
 
     private TreeHelper treeHelper;
 
@@ -80,19 +80,17 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
 
         booksPath.forEach(path -> {
             // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
-            new Thread(() -> {
-                Epub epub = new Epub(path);
+            Epub epub = new Epub(path);
 
 
-                // Attempt to initialize the epub with its content.opf file.
-                // If it was not found, log an error and continue to the next book.
-                boolean result = epub.loadMetadata(false);
-                if (result) {
-                    bookObservableList.add(epub);
-                } else {
-                    System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
-                }
-            }).start();
+            // Attempt to initialize the epub with its content.opf file.
+            // If it was not found, log an error and continue to the next book.
+            boolean result = epub.loadMetadata(false);
+            if (result) {
+                bookObservableList.add(epub);
+            } else {
+                System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
+            }
         });
     }
 

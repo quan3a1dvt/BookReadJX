@@ -3,7 +3,7 @@
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -43,6 +43,6 @@
       </HBox>
    </top>
    <left>
-      <TreeView fx:id="tree" prefHeight="570.0" prefWidth="197.0" BorderPane.alignment="CENTER" />
+      <TreeTableView fx:id="tree" prefHeight="570.0" prefWidth="239.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

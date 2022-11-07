@@ -9,6 +9,7 @@ module com.example.javaapp {
     requires ea.async;
     requires org.jsoup;
     requires org.jfxtras.styles.jmetro;
+    requires java.desktop;
     opens javaapp to javafx.fxml;
     exports javaapp;
     exports javaapp.helper;
