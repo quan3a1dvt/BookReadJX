@@ -4,10 +4,7 @@ import javaapp.book.Book;
 import javaapp.eBookApp;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -54,8 +51,8 @@ public class TreeHelper {
     private TreeItem<FilterNode> authors;
     private TreeItem<FilterNode> language;
     private TreeItem<FilterNode> publisher;
+    private Set<String> tmpSet = new HashSet<>();
 
-    Set<String> authorsSet = new HashSet<>();
     Map<String, Integer> authorsMap = new HashMap<String, Integer>();
     private final ObservableList<Book> bookObservableList;
     private final Stage stage;
@@ -92,104 +89,97 @@ public class TreeHelper {
         tree.setRoot(root);
         root.getChildren().addAll(authors, language, publisher);
         tree.setShowRoot(false);
-        System.out.println(bookObservableList.size());
+        TreeTableView.TreeTableViewSelectionModel selectionModel = tree.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     void setEvent() {
-        bookObservableList.addListener(new ListChangeListener<Book>() {
+
+    }
+
+    public void addBook(List<Book> books) {
+        SwingWorker<String, Object> worker = new SwingWorker<>() {
+
             @Override
-            public void onChanged(Change<? extends Book> change) {
-                while (change.next()) {
-                    if (change.wasAdded()) {
-                        Set<String> tmpSet = new HashSet<>();
-
-                        SwingWorker<String, Object> worker = new SwingWorker<>() {
-                            @Override
-                            public String doInBackground() {
-                                for (Book book : change.getAddedSubList()) {
-                                    String author = book.getMetadata().getCreator();
-                                    if (authorsMap.containsKey(author)) {
-                                        authorsMap.put(author, authorsMap.get(author) + 1);
-                                    } else {
-                                        tmpSet.add(author);
-                                        authorsMap.put(author, 1);
-                                    }
-                                }
-                                return "done";
-                            }
-
-                            @Override
-                            protected void done() {
-                                for (String author : tmpSet) {
-                                    authors.getChildren().add(new TreeItem<FilterNode>(new FilterNode(author, authorsMap.get(author))));
-                                }
-                                for (int i = 0; i < authors.getChildren().size(); i++) {
-                                    TreeItem<FilterNode> child = authors.getChildren().get(i);
-                                    FilterNode node = child.getValue();
-                                    node.setNum(authorsMap.get(node.getName()));
-                                    child.setValue(node);
-                                }
-                                FilterNode node = authors.getValue();
-                                node.setNum(authorsMap.size());
-                                authors.setValue(node);
-                                tree.refresh();
-                            }
-                        };
-                        worker.execute();
-                    } else if (change.wasRemoved()) {
-                        Set<String> tmpSet = new HashSet<>();
-                        SwingWorker<String, Object> worker = new SwingWorker<>() {
-                            @Override
-                            public String doInBackground() {
-                                for (Book book : change.getRemoved()) {
-
-
-                                    System.out.println("bruh");
-                                    String author = book.getMetadata().getCreator();
-                                    if (authorsMap.get(author) == 1) {
-                                        authorsMap.remove(author);
-                                        tmpSet.add(author);
-                                    } else authorsMap.put(author, authorsMap.get(author) - 1);
-                                }
-                                return "done";
-                            }
-
-                            @Override
-                            protected void done() {
-
-                                for (int i = 0; i < authors.getChildren().size(); i++) {
-
-                                    TreeItem<FilterNode> child = authors.getChildren().get(i);
-                                    FilterNode node = child.getValue();
-                                    if (tmpSet.contains(node.getName())) {
-                                        authors.getChildren().remove(child);
-                                    } else {
-                                        if (authorsMap.containsKey(node.getName())) {
-                                            node.setNum(authorsMap.get(node.getName()));
-                                            child.setValue(node);
-                                        }
-
-                                    }
-
-                                }
-
-                                FilterNode node = authors.getValue();
-                                node.setNum(authorsMap.size());
-                                authors.setValue(node);
-                                tree.refresh();
-                            }
-                        };
-                        worker.execute();
+            public String doInBackground() {
+                for (Book book : books) {
+                    String author = book.getMetadata().getCreator();
+                    if (authorsMap.containsKey(author)) {
+                        authorsMap.put(author, authorsMap.get(author) + 1);
+                    } else {
+                        tmpSet.add(author);
+                        authorsMap.put(author, 1);
                     }
                 }
+                return "done";
             }
-        });
+
+            @Override
+            protected void done() {
+                authors.getChildren().forEach(child -> {
+                    // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
+                    new Thread(() -> {
+                        FilterNode node = child.getValue();
+                        node.setNum(authorsMap.get(node.getName()));
+                        child.setValue(node);
+                    }).start();
+                });
+
+                for (String author : tmpSet) {
+                    if (authorsMap.containsKey(author)) {
+                        authors.getChildren().add(new TreeItem<FilterNode>(new FilterNode(author, authorsMap.get(author))));
+                    }
+                }
+                tmpSet.clear();
+
+                FilterNode node = authors.getValue();
+                node.setNum(authorsMap.size());
+                authors.setValue(node);
+                tree.refresh();
+            }
+        };
+        worker.execute();
     }
 
-    ;
+    public void deleteBook(List<Book> books) {
+        Set<String> tmpSet = new HashSet<>();
+        SwingWorker<String, Object> worker = new SwingWorker<>() {
+            @Override
+            public String doInBackground() {
 
-    void addBook(Book book) {
+                for (Book book : books) {
+                    String author = book.getMetadata().getCreator();
 
+                    if (authorsMap.get(author) == 1) {
+                        authorsMap.remove(author);
+                        tmpSet.add(author);
+                    } else authorsMap.put(author, authorsMap.get(author) - 1);
+                }
+                return "done";
+            }
+
+            @Override
+            protected void done() {
+
+                for (int i = 0; i < authors.getChildren().size(); i++) {
+                    TreeItem<FilterNode> child = authors.getChildren().get(i);
+                    FilterNode node = child.getValue();
+                    if (tmpSet.contains(node.getName())) {
+                        authors.getChildren().remove(child);
+                    } else {
+                        if (authorsMap.containsKey(node.getName())) {
+                            node.setNum(authorsMap.get(node.getName()));
+                            child.setValue(node);
+                        }
+                    }
+                }
+
+                FilterNode node = authors.getValue();
+                node.setNum(authorsMap.size());
+                authors.setValue(node);
+                tree.refresh();
+            }
+        };
+        worker.execute();
     }
-
 }

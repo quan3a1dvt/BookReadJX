@@ -22,6 +22,7 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,8 @@ import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
+
+import javax.swing.*;
 
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
@@ -68,30 +71,46 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
         tableHelper = new TableHelper(table, bookObservableList, this);
         menuHelper = new MenuHelper(addBook, bookObservableList, primaryStage);
         treeHelper = new TreeHelper(tree, bookObservableList, primaryStage);
-        List<Path> booksPath = null;
-        try {
-            booksPath = Files.list(READER_LIBRARY_PATH)
-                    .filter(path -> !Files.isDirectory(path))
-                    .filter(path -> path.toString().endsWith(".epub"))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        booksPath.forEach(path -> {
-            // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
-            Epub epub = new Epub(path);
+        SwingWorker<String, Object> worker = new SwingWorker<>() {
+            List<Book> books = new ArrayList<>();
+            @Override
+            public String doInBackground() {
+                List<Path> booksPath = null;
+                try {
+                    booksPath = Files.list(READER_LIBRARY_PATH)
+                            .filter(path -> !Files.isDirectory(path))
+                            .filter(path -> path.toString().endsWith(".epub"))
+                            .collect(Collectors.toList());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
+                booksPath.forEach(path ->
 
-            // Attempt to initialize the epub with its content.opf file.
-            // If it was not found, log an error and continue to the next book.
-            boolean result = epub.loadMetadata(false);
-            if (result) {
-                bookObservableList.add(epub);
-            } else {
-                System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
+                {
+                    // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
+                    Epub epub = new Epub(path);
+                    // Attempt to initialize the epub with its content.opf file.
+                    // If it was not found, log an error and continue to the next book.
+                    boolean result = epub.loadMetadata(false);
+                    if (result) {
+                        bookObservableList.add(epub);
+                        books.add(epub);
+                    } else {
+                        System.out.println(String.format("content.opf could not be read from %s. Is the file a valid .epub? Skipping to the next book.", path.getFileName()));
+                    }
+                });
+
+                return "done";
             }
-        });
+            @Override
+            protected void done() {
+                treeHelper.addBook(books);
+            }
+
+        };
+        worker.execute();
     }
 
     private void setUI() {
@@ -150,6 +169,9 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
         }
     }
 
+    public void onTableDeleteBook(List<Book> books){
+        treeHelper.deleteBook(books);
+    }
     private Stage primaryStage;
 
     public void setPrimaryStage(Stage primaryStage) {

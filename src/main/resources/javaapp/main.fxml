@@ -15,34 +15,41 @@
       <TableView fx:id="table" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <Pane fx:id="rightPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="165.0" BorderPane.alignment="CENTER">
+      <Pane fx:id="rightPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="165.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="selectedBookCover" fitHeight="211.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="selectedBookCover" fitHeight="211.0" fitWidth="165.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
                <viewport>
                   <Rectangle2D />
                </viewport>
             </ImageView>
          </children></Pane>
    </right>
-   <bottom>
-      <BorderPane fx:id="bottomPane" prefHeight="24.0" prefWidth="1137.0" BorderPane.alignment="CENTER" />
-   </bottom>
-   <top>
-      <HBox fx:id="topPane" prefHeight="85.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
-         <children>
-            <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add Book">
-               <graphic>
-                  <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@images/add_book.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </SplitMenuButton>
-         </children>
-      </HBox>
-   </top>
    <left>
-      <TreeTableView fx:id="tree" prefHeight="570.0" prefWidth="239.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
+      <TreeTableView fx:id="tree" prefHeight="549.0" prefWidth="239.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
    </left>
+   <top>
+      <BorderPane prefHeight="59.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
+         <center>
+            <HBox fx:id="topPane" prefHeight="115.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
+               <children>
+                  <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add Book">
+                     <graphic>
+                        <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/add_book.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </SplitMenuButton>
+               </children>
+            </HBox>
+         </center>
+         <bottom>
+            <Pane prefHeight="35.0" prefWidth="1137.0" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+   </top>
+   <bottom>
+      <Pane fx:id="bottomPane" prefHeight="29.0" prefWidth="1137.0" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>
