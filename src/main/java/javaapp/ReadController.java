@@ -9,8 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javaapp.book.Book;
@@ -101,7 +104,6 @@ public class ReadController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         view.setOnKeyPressed((KeyEvent event) -> {
-            System.out.println(pages.size());
             view.getEngine().executeScript("document.onkeydown = function(e) {\n" +
                     "    var key = e.which;\n" +
                     "    if(key==35 || key == 36 || key == 37 || key == 39) {\n" +
@@ -178,16 +180,6 @@ public class ReadController implements Initializable {
                     throw new RuntimeException(ex);
                 }
             }
-//            for (Element e: doc.select("img")){
-//                e.attr("style", "width:100%;height:100%;margin:0;padding:0;");
-//            }
-
-//            try {
-//                doc.appendElement(String.format("link href=\"%s\" rel=\"stylesheet\" type=\"text/css\"", Paths.get(eBookApp.class.getResource("config/stylesheet.css").toURI()).toUri().toString()));
-//            } catch (URISyntaxException e) {
-//                throw new RuntimeException(e);
-//            }
-//            System.out.println(doc);
             html = doc.toString();
 
             // HTML files have src/image tags that reference images from their perspective/directory.
@@ -205,52 +197,23 @@ public class ReadController implements Initializable {
                 URI x = Paths.get(book.getImageDirectory().toString(), group.substring(group.lastIndexOf("/") + 1)).toUri();
                 return String.format("src=\"%s\"", x);
             });
-//            pattern = Pattern.compile("href=\"([^\"]+)\"");
-//            matcher = pattern.matcher(html);
-//            html = matcher.replaceAll(result -> {
-//                String x = book.getCssPath().toUri().toString();
-//                return String.format("href=\"%s\"", x);
-//            });
-
-//            pattern = Pattern.compile("<!DOCTYPE[^>]+>");
-//            matcher = pattern.matcher(html);
-//            html = matcher.replaceAll(result -> {
-//                return "";
-//            });
             pages.add(html);
+        });
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem reload = new MenuItem("Reload");
+        reload.setOnAction(e -> view.getEngine().reload());
+        MenuItem savePage = new MenuItem("Save Page");
+        savePage.setOnAction(e -> System.out.println("Save page..."));
+        MenuItem hideImages = new MenuItem("Hide Images");
+        hideImages.setOnAction(e -> System.out.println("Hide Images..."));
+        contextMenu.getItems().addAll(reload, savePage, hideImages);
 
-//            // Retrieve the template (HTML without the body) from the current spine entry.
-//            String template = HTMLHelper.getTemplate(html);
-//
-//            // Create a task to calculate the pages from our HTML.
-//            // This future is stored in a list so we can reference it later.
-//            HeightHelper helper = new HeightHelper();
-//            CompletableFuture<Pair<SpineEntry, String[]>> future = helper.calculatePages(entry, html, stage.getHeight(), stage.getWidth() * .6);
-//            futures.add(future);
-//
-//            // Debug log
-////            System.out.printf("Loading %s.\n", entry.getIdref());
-//
-//            // When the future is finished calculating the pages for this particular entry in the book,
-//            //   we iterate over each page and add a WebView element representing the page to our screen.
-//            // Additional setup for individual pages also occurs here.
-//            future.thenAccept(result -> {
-//                for(String page : result.getValue()) {
-//                    // TODO: this will break very heavily as soon as a book has %s in it
-//                    pages.add(template.replace("%s", page));
-//                }
-//
-//                // If the SpineEntry is the first one in this epub's TOC, load the first page now.
-//                if(book.getSpine().indexOf(result.getKey()) == 0 && !pages.isEmpty()) {
-//                    view.getEngine().load(pages.get(0));
-//                }
-//
-//
-//            }).exceptionally(error -> {
-//                error.printStackTrace();
-//                return null;
-//            });
-
+        view.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(view, e.getScreenX(), e.getScreenY());
+            } else {
+                contextMenu.hide();
+            }
         });
     }
 

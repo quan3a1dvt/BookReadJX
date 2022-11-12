@@ -27,15 +27,12 @@ public class TableHelper {
     private final TableColumn<Book, String> title;
     private final TableColumn<Book, String> author;
     private final TableColumn<Book, String> date;
-    private final ObservableList<Book> bookObservableList;
     final private tableCallBacks callbacks;
-
-    final private FilteredList<Book> filteredList;
-    public TableHelper(TableView<Book> table, ObservableList<Book> bookObservableList, tableCallBacks callbacks) {
+    final private FilteredList<Book> bookFilteredList;
+    public TableHelper(TableView<Book> table, FilteredList<Book> bookFilteredList, tableCallBacks callbacks) {
         this.table = table;
-        this.bookObservableList = bookObservableList;
-        this.filteredList = new FilteredList<>(bookObservableList);
-        this.table.setItems(filteredList);
+        this.bookFilteredList = bookFilteredList;
+        this.table.setItems(bookFilteredList);
         this.callbacks = callbacks;
         this.title = new TableColumn<>("Title");
         this.author = new TableColumn<>("Author");
@@ -49,7 +46,7 @@ public class TableHelper {
         title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
         author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());
         date.setCellValueFactory(cell -> cell.getValue().getMetadata().dateProperty());
-        table.setItems(bookObservableList);
+        table.setItems(bookFilteredList);
         TableView.TableViewSelectionModel<Book> selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
         table.setOnMouseClicked((MouseEvent event) -> {
@@ -75,7 +72,7 @@ public class TableHelper {
                     }
                     @Override
                     protected void done() {
-                        bookObservableList.removeAll(table.getSelectionModel().getSelectedItems());
+                        bookFilteredList.removeAll(table.getSelectionModel().getSelectedItems());
                     }
 
                 };

@@ -9,6 +9,7 @@ import javaapp.helper.TableHelper;
 import javaapp.helper.TreeHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -65,12 +66,14 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
 
     ObservableList<Book> bookObservableList = FXCollections.observableArrayList();
 
+    FilteredList<Book> bookFilteredList;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUI();
-        tableHelper = new TableHelper(table, bookObservableList, this);
-        menuHelper = new MenuHelper(addBook, bookObservableList, primaryStage);
-        treeHelper = new TreeHelper(tree, bookObservableList, primaryStage);
+        bookFilteredList = new FilteredList<>(bookObservableList);
+        tableHelper = new TableHelper(table, bookFilteredList, this);
+        menuHelper = new MenuHelper(addBook, bookFilteredList, primaryStage);
+        treeHelper = new TreeHelper(tree, bookFilteredList, primaryStage);
 
         SwingWorker<String, Object> worker = new SwingWorker<>() {
             List<Book> books = new ArrayList<>();

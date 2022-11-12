@@ -3,6 +3,7 @@
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -45,7 +46,10 @@
             </HBox>
          </center>
          <bottom>
-            <Pane prefHeight="35.0" prefWidth="1137.0" BorderPane.alignment="CENTER" />
+            <Pane prefHeight="35.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
+               <children>
+                  <TextField layoutX="97.0" layoutY="4.0" prefHeight="28.0" prefWidth="876.0" />
+               </children></Pane>
          </bottom>
       </BorderPane>
    </top>
