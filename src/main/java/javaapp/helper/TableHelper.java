@@ -11,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class TableHelper {
     }
 
     private void Init() {
+        table.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         table.getColumns().addAll(title, author, date);
         title.setCellValueFactory(cell -> cell.getValue().getMetadata().titleProperty());
         author.setCellValueFactory(cell -> cell.getValue().getMetadata().creatorProperty());

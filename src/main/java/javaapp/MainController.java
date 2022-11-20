@@ -43,7 +43,10 @@ import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 public class MainController implements Initializable, TableHelper.tableCallBacks {
 
-
+    @FXML
+    private Pane filterPane;
+    @FXML
+    private TextField filterBox;
     @FXML
     private HBox topPane;
     @FXML
@@ -117,6 +120,9 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     }
 
     private void setUI() {
+        filterPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        filterBox.getStyleClass().clear();
+        filterBox.getStyleClass().add("-fx-control-inner-background: rgb(205, 20, 20)");
         topPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         rightPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 //        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);

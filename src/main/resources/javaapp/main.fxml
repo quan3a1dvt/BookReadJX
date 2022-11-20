@@ -26,7 +26,7 @@
          </children></Pane>
    </right>
    <left>
-      <TreeTableView fx:id="tree" prefHeight="549.0" prefWidth="239.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
+      <TreeTableView fx:id="tree" prefHeight="531.0" prefWidth="249.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
    </left>
    <top>
       <BorderPane prefHeight="59.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
@@ -46,9 +46,9 @@
             </HBox>
          </center>
          <bottom>
-            <Pane prefHeight="35.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
+            <Pane fx:id="filterPane" prefHeight="35.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
                <children>
-                  <TextField layoutX="97.0" layoutY="4.0" prefHeight="28.0" prefWidth="876.0" />
+                  <TextField fx:id="filterBox" layoutX="97.0" layoutY="4.0" prefHeight="28.0" prefWidth="876.0" />
                </children></Pane>
          </bottom>
       </BorderPane>
