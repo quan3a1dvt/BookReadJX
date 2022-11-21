@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" stylesheets="@table.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.MainController">
    <center>
       <TableView fx:id="table" BorderPane.alignment="CENTER" />
    </center>
@@ -26,18 +26,45 @@
          </children></Pane>
    </right>
    <left>
-      <TreeTableView fx:id="tree" prefHeight="531.0" prefWidth="249.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
+      <TreeTableView fx:id="tree" prefHeight="531.0" prefWidth="234.0" stylesheets="@hideheader.css" BorderPane.alignment="CENTER" />
    </left>
    <top>
       <BorderPane prefHeight="59.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
          <center>
             <HBox fx:id="topPane" prefHeight="115.0" prefWidth="1137.0" BorderPane.alignment="CENTER">
                <children>
-                  <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add Book">
+                  <SplitMenuButton fx:id="addBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Add books">
                      <graphic>
                         <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/add_book.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </SplitMenuButton>
+                  <SplitMenuButton fx:id="viewBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="View">
+                     <graphic>
+                        <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/view.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </SplitMenuButton>
+                  <SplitMenuButton fx:id="removeBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="84.0" prefWidth="110.0" stylesheets="@dark.css" text="Remove books">
+                     <graphic>
+                        <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/remove_books.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </SplitMenuButton>
+                  <SplitMenuButton fx:id="saveBook" contentDisplay="TOP" graphicTextGap="0.1" mnemonicParsing="false" prefHeight="76.0" prefWidth="84.0" stylesheets="@dark.css" text="Save to disk">
+                     <graphic>
+                        <ImageView fitHeight="58.0" fitWidth="147.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/save.png" />
                            </image>
                         </ImageView>
                      </graphic>

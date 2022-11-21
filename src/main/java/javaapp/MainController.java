@@ -41,7 +41,7 @@ import javax.swing.*;
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 
-public class MainController implements Initializable, TableHelper.tableCallBacks {
+public class MainController implements Initializable, TableHelper.tableCallBacks, MenuHelper.menuCallBacks{
 
     @FXML
     private Pane filterPane;
@@ -60,6 +60,12 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     private TableHelper tableHelper;
     @FXML
     private SplitMenuButton addBook;
+    @FXML
+    private SplitMenuButton viewBook;
+    @FXML
+    private SplitMenuButton removeBook;
+    @FXML
+    private SplitMenuButton saveBook;
     private MenuHelper menuHelper;
 
     @FXML
@@ -69,13 +75,14 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
 
     ObservableList<Book> bookObservableList = FXCollections.observableArrayList();
 
+
     FilteredList<Book> bookFilteredList;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUI();
         bookFilteredList = new FilteredList<>(bookObservableList);
         tableHelper = new TableHelper(table, bookFilteredList, this);
-        menuHelper = new MenuHelper(addBook, bookFilteredList, primaryStage);
+        menuHelper = new MenuHelper(addBook, viewBook, removeBook, saveBook, bookFilteredList, primaryStage,this);
         treeHelper = new TreeHelper(tree, bookFilteredList, primaryStage);
 
         SwingWorker<String, Object> worker = new SwingWorker<>() {
@@ -120,13 +127,13 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     }
 
     private void setUI() {
-        filterPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        filterBox.getStyleClass().clear();
-        filterBox.getStyleClass().add("-fx-control-inner-background: rgb(205, 20, 20)");
-        topPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        rightPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-//        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        bottomPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+//        filterPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+//        filterBox.getStyleClass().clear();
+//        filterBox.getStyleClass().add("-fx-control-inner-background: rgb(205, 20, 20)");
+//        topPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+//        rightPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+////        leftPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+//        bottomPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
     }
 
     void reviewTableSelectedBook() {
@@ -156,6 +163,9 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     }
 
     public void onTableOpenBook(Book book) {
+        onOpenBook(book);
+    }
+    private void onOpenBook(Book book){
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
         Scene scene = null;
 //        config\pane.css
@@ -177,7 +187,6 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
             e.printStackTrace();
         }
     }
-
     public void onTableDeleteBook(List<Book> books){
         treeHelper.deleteBook(books);
     }
@@ -185,5 +194,14 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+
+    public void onMenuOpenBook() {
+        tableHelper.onOpenBookFromMenu();
+    }
+
+    public void onMenuOpenBook(Book book) {
+        onOpenBook(book);
     }
 }

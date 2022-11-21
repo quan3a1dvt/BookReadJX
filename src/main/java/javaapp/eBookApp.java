@@ -22,7 +22,7 @@ public class eBookApp extends Application {
         System.getProperty( "javafx.runtime.version" );
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        JMetro jmetro = new JMetro(scene, Style.DARK);
+//        JMetro jmetro = new JMetro(scene, Style.LIGHT);
         primaryStage.setTitle("Hello!");
         primaryStage.setScene(scene);
         primaryStage.show();

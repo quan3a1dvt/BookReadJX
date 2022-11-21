@@ -113,8 +113,8 @@ public class TreeHelper {
         tree.getColumns().add(stateCol);
         double treeWidth = tree.getPrefWidth();
         numCol.setPrefWidth(treeWidth * 0.15);
-        stateCol.setPrefWidth(treeWidth * 0.1);
-        treeCol.setPrefWidth(tree.getPrefWidth() - numCol.getPrefWidth() - stateCol.getPrefWidth() - 3.0);
+        stateCol.setPrefWidth(treeWidth * 0.08);
+        treeCol.setPrefWidth(tree.getPrefWidth() - numCol.getPrefWidth() - stateCol.getPrefWidth() - treeWidth * 0.07);
         root = new TreeItem<FilterNode>(new FilterNode());
         authors = new TreeItem<FilterNode>(new FilterNode("Authors", 0, ""));
         languages = new TreeItem<FilterNode>(new FilterNode("Language", 0, ""));
@@ -123,6 +123,7 @@ public class TreeHelper {
         tree.setRoot(root);
         root.getChildren().addAll(authors, languages, publishers);
         tree.setShowRoot(false);
+
 
     }
 
