@@ -86,6 +86,9 @@ public class TreeHelper {
     private Predicate<Book> filterAuthors;
     private Predicate<Book> filterLanguages;
     private Predicate<Book> filterPublishers;
+    private String filterAuthorsString = "ALL";
+    private String filterLanguagesString = "ALL";
+    private String filterPublishersString = "ALL";
     private final Stage stage;
 
     public TreeHelper(TreeTableView<?> tree, FilteredList<Book> bookFilteredList, Stage primaryStage) {
@@ -145,23 +148,29 @@ public class TreeHelper {
                     if (item == authors){
                         if (Objects.equals(node.getState(), "")){
                             filterAuthors = i -> i.getMetadata().getCreator() != null;
+                            filterAuthorsString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterAuthors = i -> !Objects.equals(i.getMetadata().getCreator(), "");
+                            filterAuthorsString = "TRUE";
                         }
                         else{
                             filterAuthors = i -> Objects.equals(i.getMetadata().getCreator(), "");
+                            filterAuthorsString = "FALSE";
                         }
                     }
                     else{
                         if (Objects.equals(node.getState(), "")){
                             filterAuthors = i -> i.getMetadata().getCreator() != null;
+                            filterAuthorsString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterAuthors = i -> Objects.equals(i.getMetadata().getCreator(), node.getName());
+                            filterAuthorsString = node.getName();
                         }
                         else{
                             filterAuthors = i -> !Objects.equals(i.getMetadata().getCreator(), node.getName());
+                            filterAuthorsString = "!" + node.getName();
                         }
                     }
                 }
@@ -175,23 +184,29 @@ public class TreeHelper {
                     if (item == languages){
                         if (Objects.equals(node.getState(), "")){
                             filterLanguages = i -> i.getMetadata().getLanguage() != null;
+                            filterLanguagesString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterLanguages = i -> !Objects.equals(i.getMetadata().getLanguage(), "");
+                            filterLanguagesString = "TRUE";
                         }
                         else{
                             filterLanguages = i -> Objects.equals(i.getMetadata().getLanguage(), "");
+                            filterLanguagesString = "FALSE";
                         }
                     }
                     else{
                         if (Objects.equals(node.getState(), "")){
                             filterLanguages = i -> i.getMetadata().getLanguage() != null;
+                            filterLanguagesString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterLanguages = i -> Objects.equals(i.getMetadata().getLanguage(), node.getName());
+                            filterLanguagesString = node.getName();
                         }
                         else{
                             filterLanguages =  i -> !Objects.equals(i.getMetadata().getLanguage(), node.getName());
+                            filterLanguagesString = "!" + node.getName();
                         }
                     }
                 }
@@ -205,23 +220,29 @@ public class TreeHelper {
                     if (item == publishers){
                         if (Objects.equals(node.getState(), "")){
                             filterPublishers = i -> i.getMetadata().getPublisher() != null;
+                            filterPublishersString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterPublishers = i -> !Objects.equals(i.getMetadata().getPublisher(), "");
+                            filterPublishersString = "TRUE";
                         }
                         else{
                             filterPublishers = i -> Objects.equals(i.getMetadata().getPublisher(), "");
+                            filterPublishersString = "FALSE";
                         }
                     }
                     else{
                         if (Objects.equals(node.getState(), "")){
                             filterPublishers = i -> i.getMetadata().getPublisher() != null;
+                            filterPublishersString = "ALL";
                         }
                         else if (Objects.equals(node.getState(), "➕")){
                             filterPublishers = i -> Objects.equals(i.getMetadata().getPublisher(), node.getName());
+                            filterPublishersString = node.getName();
                         }
                         else{
                             filterPublishers = i -> !Objects.equals(i.getMetadata().getPublisher(), node.getName());
+                            filterPublishersString = "!" + node.getName();
                         }
                     }
                 }
@@ -230,6 +251,8 @@ public class TreeHelper {
                 bookFilteredList.setPredicate(filter);
                 tree.getSelectionModel().clearSelection();
                 tree.refresh();
+                System.out.println(filterAuthorsString + "   " + filterLanguagesString + "   " + filterPublishersString);
+
             }
         });
     }
