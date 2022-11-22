@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -20,6 +22,7 @@ public class TreeHelper {
         private Integer num;
 
         private String state = "";
+
         public FilterNode() {
         }
 
@@ -28,11 +31,13 @@ public class TreeHelper {
             this.num = num;
             this.state = state;
         }
-        public void changeState(){
+
+        public void changeState() {
             if (state == "") state = "➕";
             else if (state == "➕") state = "➖";
             else state = "";
         }
+
         public String getName() {
             return name;
         }
@@ -57,7 +62,7 @@ public class TreeHelper {
             this.state = state;
         }
 
-        private void resetState(){
+        private void resetState() {
             this.state = "";
         }
     }
@@ -82,7 +87,7 @@ public class TreeHelper {
     private FilterNode preFilterNodeLanguages;
     private FilterNode preFilterNodePublishers;
     private final FilteredList<Book> bookFilteredList;
-
+    private final ObservableList<Book> bookObservableList;
     private Predicate<Book> filterAuthors;
     private Predicate<Book> filterLanguages;
     private Predicate<Book> filterPublishers;
@@ -91,11 +96,14 @@ public class TreeHelper {
     private String filterPublishersString = "ALL";
     private final Stage stage;
 
-    public TreeHelper(TreeTableView<?> tree, FilteredList<Book> bookFilteredList, Stage primaryStage) {
+    private treeCallBacks callbacks;
+
+    public TreeHelper(TreeTableView<?> tree, FilteredList<Book> bookFilteredList, ObservableList<Book> bookObservableList, Stage primaryStage, treeCallBacks callbacks) {
         this.tree = (TreeTableView<FilterNode>) tree;
         this.bookFilteredList = bookFilteredList;
+        this.bookObservableList = bookObservableList;
         this.stage = primaryStage;
-
+        this.callbacks = callbacks;
         Init();
     }
 
@@ -134,115 +142,105 @@ public class TreeHelper {
         filterAuthors = i -> i.getMetadata().getCreator() != null;
         filterLanguages = i -> i.getMetadata().getLanguage() != null;
         filterPublishers = i -> i.getMetadata().getPublisher() != null;
-
+        tree.setOnKeyPressed((KeyEvent event) -> {
+            //Delete books selected when press delete
+            if (event.getCode() == KeyCode.SHIFT){
+                tree.refresh();
+            }
+        });
         tree.setOnMouseClicked((MouseEvent event) -> {
-            if (event.getButton().equals(MouseButton.PRIMARY) && tree.getSelectionModel().getSelectedItem() != null){
+            if (event.getButton().equals(MouseButton.PRIMARY) && tree.getSelectionModel().getSelectedItem() != null) {
                 TreeItem<FilterNode> item = tree.getSelectionModel().getSelectedItem();
                 FilterNode node = item.getValue();
-                if (item == authors || item.getParent() == authors){
-                    if (preFilterNodeAuthors != null && !Objects.equals(preFilterNodeAuthors.getName(), node.getName())){
+                if (item == authors || item.getParent() == authors) {
+                    if (preFilterNodeAuthors != null && !Objects.equals(preFilterNodeAuthors.getName(), node.getName())) {
                         preFilterNodeAuthors.resetState();
                     }
                     node.changeState();
                     preFilterNodeAuthors = node;
-                    if (item == authors){
-                        if (Objects.equals(node.getState(), "")){
+                    if (item == authors) {
+                        if (Objects.equals(node.getState(), "")) {
                             filterAuthors = i -> i.getMetadata().getCreator() != null;
                             filterAuthorsString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterAuthors = i -> !Objects.equals(i.getMetadata().getCreator(), "");
                             filterAuthorsString = "TRUE";
-                        }
-                        else{
+                        } else {
                             filterAuthors = i -> Objects.equals(i.getMetadata().getCreator(), "");
                             filterAuthorsString = "FALSE";
                         }
-                    }
-                    else{
-                        if (Objects.equals(node.getState(), "")){
+                    } else {
+                        if (Objects.equals(node.getState(), "")) {
                             filterAuthors = i -> i.getMetadata().getCreator() != null;
                             filterAuthorsString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterAuthors = i -> Objects.equals(i.getMetadata().getCreator(), node.getName());
-                            filterAuthorsString = node.getName();
-                        }
-                        else{
+                            filterAuthorsString = "=" + node.getName();
+                        } else {
                             filterAuthors = i -> !Objects.equals(i.getMetadata().getCreator(), node.getName());
-                            filterAuthorsString = "!" + node.getName();
+                            filterAuthorsString = "!=" + node.getName();
                         }
                     }
                 }
 
-                if (item == languages || item.getParent() == languages){
-                    if (preFilterNodeLanguages != null && !Objects.equals(preFilterNodeLanguages.getName(), node.getName())){
+                if (item == languages || item.getParent() == languages) {
+                    if (preFilterNodeLanguages != null && !Objects.equals(preFilterNodeLanguages.getName(), node.getName())) {
                         preFilterNodeLanguages.resetState();
                     }
                     node.changeState();
                     preFilterNodeLanguages = node;
-                    if (item == languages){
-                        if (Objects.equals(node.getState(), "")){
+                    if (item == languages) {
+                        if (Objects.equals(node.getState(), "")) {
                             filterLanguages = i -> i.getMetadata().getLanguage() != null;
                             filterLanguagesString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterLanguages = i -> !Objects.equals(i.getMetadata().getLanguage(), "");
                             filterLanguagesString = "TRUE";
-                        }
-                        else{
+                        } else {
                             filterLanguages = i -> Objects.equals(i.getMetadata().getLanguage(), "");
                             filterLanguagesString = "FALSE";
                         }
-                    }
-                    else{
-                        if (Objects.equals(node.getState(), "")){
+                    } else {
+                        if (Objects.equals(node.getState(), "")) {
                             filterLanguages = i -> i.getMetadata().getLanguage() != null;
                             filterLanguagesString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterLanguages = i -> Objects.equals(i.getMetadata().getLanguage(), node.getName());
-                            filterLanguagesString = node.getName();
-                        }
-                        else{
-                            filterLanguages =  i -> !Objects.equals(i.getMetadata().getLanguage(), node.getName());
-                            filterLanguagesString = "!" + node.getName();
+                            filterLanguagesString = "=" + node.getName();
+                        } else {
+                            filterLanguages = i -> !Objects.equals(i.getMetadata().getLanguage(), node.getName());
+                            filterLanguagesString = "!=" + node.getName();
                         }
                     }
                 }
 
-                if (item == publishers || item.getParent() == publishers){
-                    if (preFilterNodePublishers != null && !Objects.equals(preFilterNodePublishers.getName(), node.getName())){
+                if (item == publishers || item.getParent() == publishers) {
+                    if (preFilterNodePublishers != null && !Objects.equals(preFilterNodePublishers.getName(), node.getName())) {
                         preFilterNodePublishers.resetState();
                     }
                     node.changeState();
                     preFilterNodePublishers = node;
-                    if (item == publishers){
-                        if (Objects.equals(node.getState(), "")){
+                    if (item == publishers) {
+                        if (Objects.equals(node.getState(), "")) {
                             filterPublishers = i -> i.getMetadata().getPublisher() != null;
                             filterPublishersString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterPublishers = i -> !Objects.equals(i.getMetadata().getPublisher(), "");
                             filterPublishersString = "TRUE";
-                        }
-                        else{
+                        } else {
                             filterPublishers = i -> Objects.equals(i.getMetadata().getPublisher(), "");
                             filterPublishersString = "FALSE";
                         }
-                    }
-                    else{
-                        if (Objects.equals(node.getState(), "")){
+                    } else {
+                        if (Objects.equals(node.getState(), "")) {
                             filterPublishers = i -> i.getMetadata().getPublisher() != null;
                             filterPublishersString = "ALL";
-                        }
-                        else if (Objects.equals(node.getState(), "➕")){
+                        } else if (Objects.equals(node.getState(), "➕")) {
                             filterPublishers = i -> Objects.equals(i.getMetadata().getPublisher(), node.getName());
-                            filterPublishersString = node.getName();
-                        }
-                        else{
+                            filterPublishersString = "=" + node.getName();
+                        } else {
                             filterPublishers = i -> !Objects.equals(i.getMetadata().getPublisher(), node.getName());
-                            filterPublishersString = "!" + node.getName();
+                            filterPublishersString = "!=" + node.getName();
                         }
                     }
                 }
@@ -251,8 +249,27 @@ public class TreeHelper {
                 bookFilteredList.setPredicate(filter);
                 tree.getSelectionModel().clearSelection();
                 tree.refresh();
-                System.out.println(filterAuthorsString + "   " + filterLanguagesString + "   " + filterPublishersString);
-
+                String filterString = "";
+                if (filterAuthorsString != "ALL") {
+                    if (filterString != "") {
+                        filterString += " and ";
+                    }
+                    filterString += "author:" + "\"" + filterAuthorsString + "\"";
+                }
+                if (filterLanguagesString != "ALL") {
+                    if (filterString != "") {
+                        filterString += " and ";
+                    }
+                    filterString += "language:" + "\"" + filterLanguagesString + "\"";
+                }
+                if (filterPublishersString != "ALL") {
+                    if (filterString != "") {
+                        filterString += " and ";
+                    }
+                    filterString += "publisher:" + "\"" + filterPublishersString + "\"";
+                }
+//                String filterString = "author:" + "\"" + filterAuthorsString + "\"" + " and " + "language:" + "\"" + filterLanguagesString + "\"" + " and " + "publisher:" + "\"" + filterPublishersString + "\"";
+                callbacks.onTreeFilter(filterString);
             }
         });
     }
@@ -280,7 +297,7 @@ public class TreeHelper {
                     }
 
                     String publisher = book.getMetadata().getPublisher();
-                    if (!publisher.equals("")){
+                    if (!publisher.equals("")) {
                         if (publisherMap.containsKey(publisher)) {
                             publisherMap.put(publisher, publisherMap.get(publisher) + 1);
                         } else {
@@ -304,7 +321,8 @@ public class TreeHelper {
                     // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
                     new Thread(() -> {
                         FilterNode tmpNode = child.getValue();
-                        tmpNode.setNum(authorsMap.get(tmpNode.getName()));
+                        if (authorsMap.containsKey(tmpNode.getName()))
+                            tmpNode.setNum(authorsMap.get(tmpNode.getName()));
                         child.setValue(tmpNode);
                     }).start();
                 });
@@ -321,12 +339,12 @@ public class TreeHelper {
                 authors.setValue(node);
 
 
-
                 languages.getChildren().forEach(child -> {
                     // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
                     new Thread(() -> {
                         FilterNode tmpNode = child.getValue();
-                        tmpNode.setNum(languageMap.get(tmpNode.getName()));
+                        if (languageMap.containsKey(tmpNode.getName()))
+                            tmpNode.setNum(languageMap.get(tmpNode.getName()));
                         child.setValue(tmpNode);
                     }).start();
                 });
@@ -346,7 +364,8 @@ public class TreeHelper {
                     // Each book is loaded on a separate thread, this DRASTICALLY decreases load time
                     new Thread(() -> {
                         FilterNode tmpNode = child.getValue();
-                        tmpNode.setNum(publisherMap.get(tmpNode.getName()));
+                        if (publisherMap.containsKey(tmpNode.getName()))
+                            tmpNode.setNum(publisherMap.get(tmpNode.getName()));
                         child.setValue(tmpNode);
                     }).start();
                 });
@@ -363,9 +382,6 @@ public class TreeHelper {
                 publishers.setValue(node);
 
 
-
-
-
                 tree.refresh();
 
                 tree.setDisable(false);
@@ -374,31 +390,56 @@ public class TreeHelper {
         worker.execute();
     }
 
-    public void deleteBook(List<Book> books) {
-        Set<String> tmpSet = new HashSet<>();
+    public void removeBook(List<Book> books) {
+
+        Set<String> tmpSetAuthor = new HashSet<>();
+        Set<String> tmpSetLanguage = new HashSet<>();
+        Set<String> tmpSetPublisher = new HashSet<>();
+        Map<String, Integer> tmpMapAuthor = new HashMap<>();
+        Map<String, Integer> tmpMapLanguage = new HashMap<>();
+        Map<String, Integer> tmpMapPublisher = new HashMap<>();
+
         SwingWorker<String, Object> worker = new SwingWorker<>() {
             @Override
             public String doInBackground() {
-
                 for (Book book : books) {
                     String author = book.getMetadata().getCreator();
+                    if(authorsMap.containsKey(author)) {
+                        if (authorsMap.get(author) == 1) {
+                            authorsMap.remove(author);
+                            tmpSetAuthor.add(author);
+                        } else authorsMap.put(author, authorsMap.get(author) - 1);
+                    }
+                    String language = book.getMetadata().getLanguage();
+                    if(languageMap.containsKey(language)){
+                        if (languageMap.get(language) == 1) {
+                            languageMap.remove(language);
+                            tmpSetLanguage.add(language);
+                        } else languageMap.put(language, languageMap.get(language) - 1);
+                    }
 
-                    if (authorsMap.get(author) == 1) {
-                        authorsMap.remove(author);
-                        tmpSet.add(author);
-                    } else authorsMap.put(author, authorsMap.get(author) - 1);
+
+                    String publisher = book.getMetadata().getPublisher();
+                    if(publisherMap.containsKey(publisher)){
+                        if (publisherMap.get(publisher) == 1) {
+                            publisherMap.remove(publisher);
+                            tmpSetPublisher.add(publisher);
+                        } else publisherMap.put(publisher, publisherMap.get(publisher) - 1);
+                    }
+
                 }
                 return "done";
             }
 
             @Override
             protected void done() {
-
+                FilterNode node;
+                List<TreeItem> removeChild = new ArrayList<>();
                 for (int i = 0; i < authors.getChildren().size(); i++) {
                     TreeItem<FilterNode> child = authors.getChildren().get(i);
-                    FilterNode node = child.getValue();
-                    if (tmpSet.contains(node.getName())) {
-                        authors.getChildren().remove(child);
+                    node = child.getValue();
+                    if (tmpSetAuthor.contains(node.getName())) {
+                        removeChild.add(child);
                     } else {
                         if (authorsMap.containsKey(node.getName())) {
                             node.setNum(authorsMap.get(node.getName()));
@@ -406,13 +447,64 @@ public class TreeHelper {
                         }
                     }
                 }
+                for (TreeItem child: removeChild){
+                    authors.getChildren().removeAll(removeChild);
+                }
 
-                FilterNode node = authors.getValue();
+                node = authors.getValue();
                 node.setNum(authorsMap.size());
                 authors.setValue(node);
+
+                removeChild = new ArrayList<>();
+                for (int i = 0; i < languages.getChildren().size(); i++) {
+                    TreeItem<FilterNode> child = languages.getChildren().get(i);
+                    node = child.getValue();
+                    if (tmpSetLanguage.contains(node.getName())) {
+                        removeChild.add(child);
+                    } else {
+                        if (languageMap.containsKey(node.getName())) {
+                            node.setNum(languageMap.get(node.getName()));
+                            child.setValue(node);
+                        }
+                    }
+                }
+                for (TreeItem child: removeChild){
+                    languages.getChildren().removeAll(removeChild);
+                }
+
+                node = languages.getValue();
+                node.setNum(languageMap.size());
+                languages.setValue(node);
+
+                removeChild = new ArrayList<>();
+                for (int i = 0; i < publishers.getChildren().size(); i++) {
+                    TreeItem<FilterNode> child = publishers.getChildren().get(i);
+                    node = child.getValue();
+                    if (tmpSetPublisher.contains(node.getName())) {
+                        removeChild.add(child);
+                    } else {
+                        if (publisherMap.containsKey(node.getName())) {
+                            node.setNum(publisherMap.get(node.getName()));
+                            child.setValue(node);
+                        }
+                    }
+                }
+                for (TreeItem child: removeChild){
+                    publishers.getChildren().removeAll(removeChild);
+                }
+                node = publishers.getValue();
+                node.setNum(publisherMap.size());
+                publishers.setValue(node);
+
                 tree.refresh();
             }
         };
         worker.execute();
     }
+
+    public interface treeCallBacks {
+        void onTreeFilter(String filter);
+
+    }
+
 }

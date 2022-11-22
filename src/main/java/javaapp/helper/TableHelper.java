@@ -3,11 +3,13 @@ package javaapp.helper;
 import javaapp.book.Book;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -16,6 +18,8 @@ import javafx.util.Callback;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import javax.swing.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 public class TableHelper {
@@ -27,11 +31,13 @@ public class TableHelper {
     final private tableCallBacks callbacks;
     final private FilteredList<Book> bookFilteredList;
 
+    final private ObservableList<Book> bookObservableList;
+
     SortedList<Book> bookSortedList;
-    public TableHelper(TableView<Book> table, FilteredList<Book> bookFilteredList, tableCallBacks callbacks) {
+    public TableHelper(TableView<Book> table, FilteredList<Book> bookFilteredList, ObservableList<Book> bookObservableList, tableCallBacks callbacks) {
         this.table = table;
         this.bookFilteredList = bookFilteredList;
-
+        this.bookObservableList =  bookObservableList;
         this.callbacks = callbacks;
         this.index = new TableColumn<>("#");
         this.title = new TableColumn<>("Title");
@@ -41,6 +47,7 @@ public class TableHelper {
     }
 
     private void Init() {
+        index.setPrefWidth(25);
         table.getColumns().addAll(index, title, author, date);
         bookSortedList = new SortedList<>(bookFilteredList);
         table.setItems(this.bookSortedList);
@@ -61,13 +68,13 @@ public class TableHelper {
         table.setOnMouseClicked((MouseEvent event) -> {
 
 //            // Review book selected when mouse click
-//            reviewSelectedBook();
+            callbacks.onTableReviewBook();
 
             // Read book when double click
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2){
-                Book selectedBook = table.getSelectionModel().getSelectedItem();
-                if (selectedBook != null){
-                    callbacks.onTableOpenBook(selectedBook);
+                List<Book> selectedBooks = table.getSelectionModel().getSelectedItems();
+                if (!selectedBooks.isEmpty()){
+                    callbacks.onTableOpenBook(selectedBooks);
                 }
 
             }
@@ -75,33 +82,54 @@ public class TableHelper {
         table.setOnKeyPressed((KeyEvent event) -> {
             //Delete books selected when press delete
             if (event.getCode() == KeyCode.DELETE){
-
-                SwingWorker<String, Object> worker = new SwingWorker<>() {
-                    @Override
-                    public String doInBackground() {
-                        callbacks.onTableDeleteBook(table.getSelectionModel().getSelectedItems());
-                        return "done";
-                    }
-                    @Override
-                    protected void done() {
-                        bookFilteredList.removeAll(table.getSelectionModel().getSelectedItems());
-                    }
-
-                };
-                worker.execute();
+                onRemoveBook();
             }
         });
 
     }
+    private void onRemoveBook(){
+        List<Book> selectedBooks = table.getSelectionModel().getSelectedItems();
+        SwingWorker<String, Object> worker = new SwingWorker<>() {
+            @Override
+            public String doInBackground() {
+                callbacks.onTableRemoveBook(selectedBooks);
+                return "done";
+            }
+            @Override
+            protected void done() {
+                for (Book book: selectedBooks){
+                    book.getPath().toFile().delete();
+                    deleteDir(book.getDataDirectory().toFile());
+                }
+                bookObservableList.removeAll(selectedBooks);
+            }
+        };
+        worker.execute();
+    }
     public void onOpenBookFromMenu(){
-        Book selectedBook = table.getSelectionModel().getSelectedItem();
-        if (selectedBook != null){
+        List<Book> selectedBook = table.getSelectionModel().getSelectedItems();
+        if (!selectedBook.isEmpty()){
             callbacks.onTableOpenBook(selectedBook);
         }
     }
-    public interface tableCallBacks {
-        void onTableOpenBook(Book book);
-        void onTableDeleteBook(List<Book> books);
+    public void onRemoveBookFromMenu(){
+        callbacks.onTableRemoveBook(table.getSelectionModel().getSelectedItems());
+//        bookObservableList.removeAll(table.getSelectionModel().getSelectedItems());
     }
-
+    public interface tableCallBacks {
+        void onTableOpenBook(List<Book> book);
+        void onTableRemoveBook(List<Book> books);
+        void onTableReviewBook();
+    }
+    void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (! Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        file.delete();
+    }
 }

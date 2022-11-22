@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1137.0" stylesheets="@table.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaapp.MainController">
    <center>
@@ -23,6 +24,7 @@
                   <Rectangle2D />
                </viewport>
             </ImageView>
+            <Text fx:id="description" layoutX="14.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="137.13671875" />
          </children></Pane>
    </right>
    <left>

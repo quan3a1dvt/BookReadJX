@@ -23,7 +23,7 @@ public class EpubMetadata {
     private final StringProperty date = new SimpleStringProperty();
     private final StringProperty subject = new SimpleStringProperty();
     private final StringProperty language = new SimpleStringProperty();
-
+    private final StringProperty description = new SimpleStringProperty();
 
     public EpubMetadata(
             String title,
@@ -34,7 +34,8 @@ public class EpubMetadata {
             String publisher,
             String date,
             String subject,
-            String language) {
+            String language,
+            String description) {
         this.title.set(title);
         this.creator.set(creator);
         this.contributor.set(contributor);
@@ -44,6 +45,7 @@ public class EpubMetadata {
         this.date.set(date);
         this.subject.set(subject);
         this.language.set(language);
+        this.description.set(description);
     }
 
     public static EpubMetadata from(Document content) {
@@ -57,7 +59,8 @@ public class EpubMetadata {
         String date = formatDate(retrieve(metadata, "dc:date"));
         String subject = retrieve(metadata, "dc:subject");
         String language = retrieve(metadata, "dc:language");
-        return new EpubMetadata(title, creator, contributor, identifier, relation, publisher, date, subject, language);
+        String description = retrieve(metadata, "dc:description");
+        return new EpubMetadata(title, creator, contributor, identifier, relation, publisher, date, subject, language, description);
     }
 
     private static String formatDate(String oridate) {
@@ -112,6 +115,9 @@ public class EpubMetadata {
     public StringProperty languageProperty() {
         return language;
     }
+    public StringProperty descriptionProperty() {
+        return description;
+    }
 
     public String getTitle() {
         return title.get();
@@ -147,5 +153,8 @@ public class EpubMetadata {
 
     public String getLanguage() {
         return language.get();
+    }
+    public String getDescription() {
+        return description.get();
     }
 }

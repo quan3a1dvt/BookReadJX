@@ -1,8 +1,7 @@
 package javaapp.book.epub;
 
 import javaapp.book.Book;
-import javaapp.book.ManifestEntry;
-import javaapp.book.SpineEntry;
+import javaapp.eBookApp;
 import javafx.scene.image.Image;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,6 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -229,18 +229,10 @@ public class Epub implements Book {
     public Path getConfigDirectory(){
         return Book.READER_LIBRARY_CONFIG_PATH;
     }
-    public Path getCssPath(){
-        return Paths.get(getConfigDirectory().toString(), "stylesheet.css");
+    public Path getCssPath() throws URISyntaxException {
+        return Paths.get(eBookApp.class.getResource("config/stylesheet.css").toURI());
     }
 
-    public Path getCss(){
-        Path css = Paths.get(getConfigDirectory().toString(), "stylesheet.css");
-        if(Files.exists(css)) {
-            System.out.println(css);
-            return css;
-        }
-        return null;
-    }
     public String readSection(SpineEntry spineEntry) {
         Optional<ManifestEntry> first = getManifest().stream().filter(entry -> entry.getId().equals(spineEntry.getIdref())).findFirst();
 
@@ -267,7 +259,15 @@ public class Epub implements Book {
         if(contentOpf.isEmpty()) {
             return;
         }
-
+        try {
+            Path target = Paths.get(getDataDirectory().toString(), "content.opf");
+            if (!Files.exists(target)) {
+                Files.copy(contentOpf.get(), target);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         // get contents of content.opf file
         String contentOPF;
         try {
@@ -331,7 +331,6 @@ public class Epub implements Book {
     public Image getCover(){
         Path coverLocation = getDataDirectory().resolve("cover.png");
         if(Files.exists(coverLocation)) {
-            System.out.println(coverLocation);
             File cover = new File(coverLocation.toUri().toString());
             return new Image(String.valueOf(cover));
         }
@@ -367,5 +366,9 @@ public class Epub implements Book {
                 ioException.printStackTrace();
             }
         }
+    }
+    public Path getPath(){
+        return Paths.get(String.valueOf(READER_LIBRARY_PATH), String.valueOf(root.getFileName()));
+
     }
 }

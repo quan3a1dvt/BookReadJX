@@ -1,6 +1,6 @@
 package javaapp;
 
-import javaapp.book.SpineEntry;
+import javaapp.book.epub.SpineEntry;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,7 +14,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javaapp.book.Book;
 
@@ -146,10 +145,10 @@ public class ReadController implements Initializable {
         });
     }
 
-    public void setBook(Book book) {
+    public void setBook(Book book) throws URISyntaxException {
         this.book = book;
         pageID = 1;
-        view.getEngine().setUserStyleSheetLocation(Paths.get(book.getConfigDirectory().toString(), "bookview.css").toUri().toString());
+        view.getEngine().setUserStyleSheetLocation(Paths.get(eBookApp.class.getResource("config/bookview.css").toURI()).toUri().toString());
         Init();
         view.getEngine().loadContent(pages.get(pageID));
 

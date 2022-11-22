@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javaapp.book.epub.Epub;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
@@ -38,10 +39,12 @@ import jfxtras.styles.jmetro.Style;
 
 import javax.swing.*;
 
+import static javaapp.book.Book.READER_LIBRARY_DATA_PATH;
+import static javaapp.book.Book.READER_LIBRARY_CONFIG_PATH;
 import static javaapp.book.Book.READER_LIBRARY_PATH;
 
 
-public class MainController implements Initializable, TableHelper.tableCallBacks, MenuHelper.menuCallBacks{
+public class MainController implements Initializable, TableHelper.tableCallBacks, MenuHelper.menuCallBacks, TreeHelper.treeCallBacks {
 
     @FXML
     private Pane filterPane;
@@ -67,29 +70,35 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
     @FXML
     private SplitMenuButton saveBook;
     private MenuHelper menuHelper;
-
+    @FXML
+    private Text description;
     @FXML
     private TreeTableView<?> tree;
 
     private TreeHelper treeHelper;
 
-    ObservableList<Book> bookObservableList = FXCollections.observableArrayList();
+    private ObservableList<Book> bookObservableList;
 
-
-    FilteredList<Book> bookFilteredList;
+    private FilteredList<Book> bookFilteredList;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUI();
+        bookObservableList = FXCollections.observableArrayList();
         bookFilteredList = new FilteredList<>(bookObservableList);
-        tableHelper = new TableHelper(table, bookFilteredList, this);
-        menuHelper = new MenuHelper(addBook, viewBook, removeBook, saveBook, bookFilteredList, primaryStage,this);
-        treeHelper = new TreeHelper(tree, bookFilteredList, primaryStage);
-
+        tableHelper = new TableHelper(table, bookFilteredList, bookObservableList, this);
+        menuHelper = new MenuHelper(addBook, viewBook, removeBook, saveBook, bookObservableList, primaryStage,this);
+        treeHelper = new TreeHelper(tree, bookFilteredList, bookObservableList, primaryStage, this);
         SwingWorker<String, Object> worker = new SwingWorker<>() {
             List<Book> books = new ArrayList<>();
             @Override
             public String doInBackground() {
                 List<Path> booksPath = null;
+                File file = new File(READER_LIBRARY_PATH.toUri());
+                if (!file.exists()){
+                    file.mkdir();
+                    READER_LIBRARY_DATA_PATH.toFile().mkdir();
+                    READER_LIBRARY_CONFIG_PATH.toFile().mkdir();
+                }
                 try {
                     booksPath = Files.list(READER_LIBRARY_PATH)
                             .filter(path -> !Files.isDirectory(path))
@@ -136,72 +145,106 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
 //        bottomPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
     }
 
-    void reviewTableSelectedBook() {
-        Book selectedBook = table.getSelectionModel().getSelectedItem();
-        if (selectedBook != null) {
-            selectedBookCover.setImage(selectedBook.getCover());
-            Image img = selectedBookCover.getImage();
-            double w = 0;
-            double h = 0;
 
-            double ratioX = selectedBookCover.getFitWidth() / img.getWidth();
-            double ratioY = selectedBookCover.getFitHeight() / img.getHeight();
-
-            double reducCoeff = 0;
-            if (ratioX >= ratioY) {
-                reducCoeff = ratioY;
-            } else {
-                reducCoeff = ratioX;
+    public void onTableOpenBook(List<Book> books) {
+        onOpenBook(books);
+    }
+    private void onOpenBook(List<Book> books){
+        for (Book book: books){
+            FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
+            Scene scene = null;
+            try {
+                scene = new Scene(fxmlLoader.load());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-            w = img.getWidth() * reducCoeff;
-            h = img.getHeight() * reducCoeff;
-
-            selectedBookCover.setX((selectedBookCover.getFitWidth() - w) / 2);
-            selectedBookCover.setY((selectedBookCover.getFitHeight() - h) / 2);
+            JMetro jmetro = new JMetro(scene, Style.DARK);
+            Stage stage = new Stage();
+            stage.setTitle(book.getMetadata().getTitle());
+            try {
+                stage.getIcons().add(new Image(eBookApp.class.getResource("images/viewer.png").openStream()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            stage.setScene(scene);
+            stage.show();
+            try {
+                ReadController controller = (ReadController) fxmlLoader.getController();
+                controller.setPrimaryStage(stage);
+                controller.setBook(book);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
-    public void onTableOpenBook(Book book) {
-        onOpenBook(book);
-    }
-    private void onOpenBook(Book book){
-        FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("read.fxml"));
-        Scene scene = null;
-//        config\pane.css
-        try {
-            scene = new Scene(fxmlLoader.load());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        JMetro jmetro = new JMetro(scene, Style.DARK);
-        Stage stage = new Stage();
-        stage.setTitle("Hello!");
-        stage.setScene(scene);
-        stage.show();
-        try {
-            ReadController controller = (ReadController) fxmlLoader.getController();
-            controller.setPrimaryStage(stage);
-            controller.setBook(book);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void onTableDeleteBook(List<Book> books){
-        treeHelper.deleteBook(books);
-    }
     private Stage primaryStage;
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
+    @Override
+    public void onTableRemoveBook(List<Book> books){
+        treeHelper.removeBook(books);
+    }
 
+    @Override
+    public void onTableReviewBook() {
+        Book book = table.getSelectionModel().getSelectedItem();
+        if (book == null){
+            return;
+        }
+        selectedBookCover.setImage(book.getCover());
+        Image img = selectedBookCover.getImage();
+        double w = 0;
+        double h = 0;
 
+        double ratioX = selectedBookCover.getFitWidth() / img.getWidth();
+        double ratioY = selectedBookCover.getFitHeight() / img.getHeight();
+
+        double reducCoeff = 0;
+        if (ratioX >= ratioY) {
+            reducCoeff = ratioY;
+        } else {
+            reducCoeff = ratioX;
+        }
+
+        w = img.getWidth() * reducCoeff;
+        h = img.getHeight() * reducCoeff;
+
+        selectedBookCover.setX((selectedBookCover.getFitWidth() - w) / 2);
+        selectedBookCover.setY((selectedBookCover.getFitHeight() - h) / 2);
+        description.setText(book.getMetadata().getDescription().replaceAll("<.+?>", ""));
+
+    }
+
+    @Override
+    public void onMenuAddBook(List<Book> books) {
+        treeHelper.addBook(books);
+    }
+    @Override
+    public void onMenuRemoveBook() {tableHelper.onRemoveBookFromMenu();}
+
+    @Override
+    public void onMenuSaveBook() {
+        Book book = table.getSelectionModel().getSelectedItem();
+        menuHelper.onMenuSaveBook(book);
+    }
+
+    @Override
     public void onMenuOpenBook() {
         tableHelper.onOpenBookFromMenu();
     }
 
-    public void onMenuOpenBook(Book book) {
-        onOpenBook(book);
+    @Override
+    public void onMenuOpenBook(List<Book> books) {
+        onOpenBook(books);
+    }
+
+    @Override
+    public void onTreeFilter(String filter) {
+        filterBox.setText(filter);
+
     }
 }

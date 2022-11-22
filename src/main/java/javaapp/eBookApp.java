@@ -4,6 +4,7 @@ import com.ea.async.Async;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
@@ -23,7 +24,8 @@ public class eBookApp extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(eBookApp.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 //        JMetro jmetro = new JMetro(scene, Style.LIGHT);
-        primaryStage.setTitle("Hello!");
+        primaryStage.setTitle("BookReadJX");
+        primaryStage.getIcons().add(new Image(eBookApp.class.getResource("images/lt.png").openStream()));
         primaryStage.setScene(scene);
         primaryStage.show();
         try {

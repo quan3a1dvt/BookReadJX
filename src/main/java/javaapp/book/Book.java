@@ -1,8 +1,10 @@
 package javaapp.book;
 
 import javaapp.book.epub.EpubMetadata;
+import javaapp.book.epub.SpineEntry;
 import javafx.scene.image.Image;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -21,8 +23,10 @@ public interface Book {
     public default Path getConfigDirectory(){
         return null;
     }
-
-    public default Path getCssPath(){
+    public default Path getPath() {
+        return null;
+    }
+    public default Path getCssPath() throws URISyntaxException {
         return null;
     }
     public default void initDataDirectory() {}
