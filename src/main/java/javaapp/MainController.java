@@ -224,7 +224,7 @@ public class MainController implements Initializable, TableHelper.tableCallBacks
         treeHelper.addBook(books);
     }
     @Override
-    public void onMenuRemoveBook() {tableHelper.onRemoveBookFromMenu();}
+    public void onMenuRemoveBook() {tableHelper.onRemoveBook();}
 
     @Override
     public void onMenuSaveBook() {

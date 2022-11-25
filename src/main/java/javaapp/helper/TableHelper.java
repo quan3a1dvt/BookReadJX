@@ -87,7 +87,7 @@ public class TableHelper {
         });
 
     }
-    private void onRemoveBook(){
+    public void onRemoveBook(){
         List<Book> selectedBooks = table.getSelectionModel().getSelectedItems();
         SwingWorker<String, Object> worker = new SwingWorker<>() {
             @Override
@@ -114,7 +114,7 @@ public class TableHelper {
     }
     public void onRemoveBookFromMenu(){
         callbacks.onTableRemoveBook(table.getSelectionModel().getSelectedItems());
-//        bookObservableList.removeAll(table.getSelectionModel().getSelectedItems());
+        bookObservableList.removeAll(table.getSelectionModel().getSelectedItems());
     }
     public interface tableCallBacks {
         void onTableOpenBook(List<Book> book);

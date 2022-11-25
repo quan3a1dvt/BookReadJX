@@ -9,6 +9,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.List;
 
 import static javaapp.book.Book.READER_LIBRARY_DATA_PATH;
 import static javaapp.book.Book.READER_LIBRARY_CONFIG_PATH;
@@ -209,7 +211,7 @@ public class MenuHelper {
                 }
             }
         }
-
+        Desktop.getDesktop().browseFileDirectory(folderbook);
     }
 
     public interface menuCallBacks {
